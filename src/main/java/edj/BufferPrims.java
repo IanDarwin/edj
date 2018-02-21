@@ -20,6 +20,9 @@ public interface BufferPrims {
 	void readBuffer(String fileName) throws IOException;
 
 	int getCurrentLineNumber();
+	
+	void goToLine(int n);
+	int size();			// as per old Collections
 
 	/** Print one or more of lines */
 	void printLines(int i, int j);

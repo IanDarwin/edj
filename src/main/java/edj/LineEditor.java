@@ -1,7 +1,8 @@
 package edj;
 
-import java.io.Console;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,19 +18,17 @@ public class LineEditor {
 	
 	protected static AbstractBufferPrims buffHandler = new BufferPrimsNoUndo();
 	
-	static Console console = System.console();
+	protected static BufferedReader in = null;
 	
 	/** Should remove throws, use try-catch inside loop */
 	public static void main(String[] args) throws IOException {
 		String line;
-		if (console == null) {
-			System.err.println("Can't use Console class, r u running under an IDE?");
-			return;
-		}
+		in = new BufferedReader(new InputStreamReader(System.in));
+
 		if (args.length == 1) {
 			buffHandler.readBuffer(args[0]);
 		}
-		while ((line = console.readLine())  != null) {
+		while ((line = in.readLine())  != null) {
 			// System.out.println("Line is: " + line);
 			
 			// FILE RELATED
@@ -38,7 +37,10 @@ public class LineEditor {
 				buffHandler.readBuffer(line.substring(1).trim());
 				continue;
 			}
-			// We could add 'w' if feeling brave
+			if (line.startsWith("w")) {
+				System.err.println("?file is read-only");
+				continue;
+			}
 			if (line.equals("q")) {
 				System.exit(0);
 			}
@@ -72,6 +74,9 @@ public class LineEditor {
 				buffHandler.undo();
 				continue;
 			}
+			if (line.matches("\\d+")) {
+				buffHandler.goToLine(Integer.parseInt(line));
+			}
 			// default: standard 'ed' error handling
 			System.out.println("?");
 		}
@@ -80,11 +85,12 @@ public class LineEditor {
 	/**
 	 * Read lines from the user until they type a "." line
 	 * @return The List of lines.
+	 * @throws IOException 
 	 */
-	private static List<String> gatherLines() {
+	private static List<String> gatherLines() throws IOException {
 		List<String> ret = new ArrayList<>();
 		String line;
-		while ((line = console.readLine()) != null && !line.equals(".")) {
+		while ((line = in.readLine()) != null && !line.equals(".")) {
 			ret.add(line);
 		}
 		return ret;

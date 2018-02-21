@@ -1,12 +1,20 @@
 package edj;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public abstract class AbstractBufferPrims implements BufferPrims {
 	
+	protected List<String> buffer = new ArrayList<>();
+
 	/** The line number is a human-centric line number, e.g., starts at 1 */
 	protected int current = NO_NUM;
+	
+	public int size() {
+		return buffer.size();
+	}
 	
 	private final static Pattern TWO_NUMS = Pattern.compile("^(\\d+),(\\d+)([a-z])$");
 	private final static Pattern ONE_NUM = Pattern.compile("^(\\d)([a-z])$");
@@ -37,4 +45,12 @@ public abstract class AbstractBufferPrims implements BufferPrims {
 		return range;
 	}
 
+	public void goToLine(int n) {
+		if (current == NO_NUM) {
+			return;
+		}
+		if (n > buffer.size())
+			n = buffer.size() -1;
+		current = n;
+	}
 }

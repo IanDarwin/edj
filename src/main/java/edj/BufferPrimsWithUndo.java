@@ -3,9 +3,22 @@ package edj;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Stack;
 
-public class BufferPrimsNoUndo extends AbstractBufferPrims {
+public class BufferPrimsWithUndo extends AbstractBufferPrims {
+	
+	// You don't actually need this in a non-GUI application
+	enum UndoableOp {
+		INSERT,
+		DELETE
+	}
+	abstract interface UndoableCommand extends Runnable {
+		// "I have nothing to add"
+	}
+	
+	Stack<UndoableCommand> undoables = new Stack<>();
 	
 	/* (non-Javadoc)
 	 * @see behavioral.BufferPrims#addLines(java.util.List)
@@ -21,6 +34,7 @@ public class BufferPrimsNoUndo extends AbstractBufferPrims {
 	public void addLines(int starting, List<String> newLines) {
 		buffer.addAll(starting, newLines);
 		current += newLines.size();
+		undoables.add(() -> deleteLines(starting, starting + newLines.size()));
 	}
 	
 	/* (non-Javadoc)
@@ -28,9 +42,11 @@ public class BufferPrimsNoUndo extends AbstractBufferPrims {
 	 */
 	@Override
 	public void deleteLines(int start, int end) {
+		List<String> undoLines = new ArrayList<>();
 		for (int i = start; i < end; i++)
-			buffer.remove(start); // not i!
+			undoLines.add(buffer.remove(start)); // not i!
 		current -= (end - start);
+		undoables.add(() -> addLines(start, undoLines));
 	}
 	
 	/* (non-Javadoc)
@@ -45,7 +61,7 @@ public class BufferPrimsNoUndo extends AbstractBufferPrims {
 		current = NO_NUM;
 	}
 	
-	private int nl = 0, nch = 0; // Only accessed single-threadedly
+	private int nl = 0, nch = 0; // Only accessed single-threadedly, only from readBuffer
 
 	public void readBuffer(String fileName) throws IOException {
 		try (BufferedReader bufferedReader = new BufferedReader(new FileReader(fileName))) {
@@ -73,7 +89,11 @@ public class BufferPrimsNoUndo extends AbstractBufferPrims {
 	}
 	
 	public void undo() {
-		System.err.println("Undo not supported in " + getClass().getSimpleName());
+		if (undoables.empty()) {
+			println("?Nothing to undo");
+			return;
+		}
+		undoables.pop().run();
 	}
 	
 	public void println(String s) {
