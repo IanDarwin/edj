@@ -59,11 +59,14 @@ public class BufferPrimsWithUndo extends AbstractBufferPrims {
 	
 	public void clearBuffer() {
 		current = NO_NUM;
+		buffer.clear();
+		undoables.clear();		// can't undo after this!
 	}
 	
 	private int nl = 0, nch = 0; // Only accessed single-threadedly, only from readBuffer
 
 	public void readBuffer(String fileName) throws IOException {
+		int startLine = current;
 		try (BufferedReader bufferedReader = new BufferedReader(new FileReader(fileName))) {
 			bufferedReader.lines().forEach((s) -> {
 				nl++; nch += s.length();
@@ -72,6 +75,7 @@ public class BufferPrimsWithUndo extends AbstractBufferPrims {
 			});
 		}
 		println(String.format("%dL, %dC", nl, nch));
+		undoables.add(() -> deleteLines(startLine, startLine + nl));
 	}
 	
 	public void printLines(int start, int j) {
