@@ -16,7 +16,7 @@ import java.util.List;
  */
 public class LineEditor {
 	
-	protected static AbstractBufferPrims buffHandler = new BufferPrimsNoUndo();
+	protected static AbstractBufferPrims buffHandler = new BufferPrimsWithUndo();
 	
 	protected static BufferedReader in = null;
 	
@@ -28,8 +28,10 @@ public class LineEditor {
 		if (args.length == 1) {
 			buffHandler.readBuffer(args[0]);
 		}
+
+		// The main loop of the editor is right here:
 		while ((line = in.readLine())  != null) {
-			// System.out.println("Line is: " + line);
+			// System.out.println("Command Line is: " + line);
 			
 			// FILE RELATED
 			if (line.startsWith("e")) {
