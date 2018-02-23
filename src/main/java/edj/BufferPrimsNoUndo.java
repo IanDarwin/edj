@@ -8,14 +8,14 @@ import java.util.List;
 public class BufferPrimsNoUndo extends AbstractBufferPrims {
 	
 	/* (non-Javadoc)
-	 * @see behavioral.BufferPrims#addLines(java.util.List)
+	 * @see edj.BufferPrims#addLines(java.util.List)
 	 */
 	@Override
 	public void addLines(List<String> newLines) {
 		addLines(current, newLines);
 	}
 	/* (non-Javadoc)
-	 * @see behavioral.BufferPrims#addLines(int, java.util.List)
+	 * @see edj.BufferPrims#addLines(int, java.util.List)
 	 */
 	@Override
 	public void addLines(int starting, List<String> newLines) {
@@ -24,7 +24,7 @@ public class BufferPrimsNoUndo extends AbstractBufferPrims {
 	}
 	
 	/* (non-Javadoc)
-	 * @see behavioral.BufferPrims#removeLines(int, int)
+	 * @see edj.BufferPrims#removeLines(int, int)
 	 */
 	@Override
 	public void deleteLines(int start, int end) {
