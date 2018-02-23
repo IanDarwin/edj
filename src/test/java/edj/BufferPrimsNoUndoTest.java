@@ -8,10 +8,8 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
-public class BufferPrimsNoUndoTest {
+public class BufferPrimsNoUndoTest extends BufferPrimsTest {
 
-	BufferPrims target;
-	
 	@Before
 	public void setUp() throws Exception {
 		target = new BufferPrimsNoUndo();

@@ -14,11 +14,20 @@ public class BufferPrimsWithUndo extends AbstractBufferPrims {
 		INSERT,
 		DELETE
 	}
-	abstract interface UndoableCommand extends Runnable {
-		// "I have nothing to add"
+	class UndoableCommand {
+		public UndoableCommand(String name, Runnable r) {
+			this.name = name;
+			this.r = r;
+		}
+		String name;
+		protected Runnable r;
 	}
 	
 	Stack<UndoableCommand> undoables = new Stack<>();
+	
+	private void pushUndo(String name, Runnable r) {
+		undoables.push(new UndoableCommand(name, r));
+	}
 	
 	/* (non-Javadoc)
 	 * @see behavioral.BufferPrims#addLines(java.util.List)
@@ -31,10 +40,10 @@ public class BufferPrimsWithUndo extends AbstractBufferPrims {
 	 * @see behavioral.BufferPrims#addLines(int, java.util.List)
 	 */
 	@Override
-	public void addLines(int starting, List<String> newLines) {
-		buffer.addAll(starting, newLines);
+	public void addLines(int start, List<String> newLines) {
+		buffer.addAll(start, newLines);
 		current += newLines.size();
-		undoables.add(() -> deleteLines(starting, starting + newLines.size()));
+		pushUndo("add", () -> deleteLines(start, start + newLines.size()));
 	}
 	
 	/* (non-Javadoc)
@@ -43,18 +52,10 @@ public class BufferPrimsWithUndo extends AbstractBufferPrims {
 	@Override
 	public void deleteLines(int start, int end) {
 		List<String> undoLines = new ArrayList<>();
-		for (int i = start; i < end; i++)
+		for (int i = start; i <= end; i++)
 			undoLines.add(buffer.remove(start)); // not i!
 		current -= (end - start);
-		undoables.add(() -> addLines(start, undoLines));
-	}
-	
-	/* (non-Javadoc)
-	 * @see behavioral.BufferPrims#getCurrentLineNum()
-	 */
-	@Override
-	public int getCurrentLineNumber() {
-		return current;
+		pushUndo("delete", () -> addLines(start, undoLines));
 	}
 	
 	public void clearBuffer() {
@@ -75,7 +76,7 @@ public class BufferPrimsWithUndo extends AbstractBufferPrims {
 			});
 		}
 		println(String.format("%dL, %dC", nl, nch));
-		undoables.add(() -> deleteLines(startLine, startLine + nl));
+		pushUndo("read", () -> deleteLines(startLine, startLine + nl));
 	}
 	
 	public void printLines(int start, int j) {
@@ -92,12 +93,18 @@ public class BufferPrimsWithUndo extends AbstractBufferPrims {
 		}
 	}
 	
+	/** If there are any undoable actions, pop the top one and run it. */
 	public void undo() {
 		if (undoables.empty()) {
 			println("?Nothing to undo");
 			return;
 		}
-		undoables.pop().run();
+		UndoableCommand undoable = undoables.pop();
+		System.out.println("Undoing " + undoable.name);
+		undoable.r.run();
+		if (undoables.empty()) {
+			undoables.pop();		// all actions create undos, drop them so undo works normally
+		}
 	}
 	
 	public void println(String s) {

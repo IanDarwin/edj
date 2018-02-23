@@ -28,17 +28,9 @@ public class BufferPrimsNoUndo extends AbstractBufferPrims {
 	 */
 	@Override
 	public void deleteLines(int start, int end) {
-		for (int i = start; i < end; i++)
+		for (int i = start; i <= end; i++)
 			buffer.remove(start); // not i!
 		current -= (end - start);
-	}
-	
-	/* (non-Javadoc)
-	 * @see behavioral.BufferPrims#getCurrentLineNum()
-	 */
-	@Override
-	public int getCurrentLineNumber() {
-		return current;
 	}
 	
 	public void clearBuffer() {
@@ -73,7 +65,7 @@ public class BufferPrimsNoUndo extends AbstractBufferPrims {
 	}
 	
 	public void undo() {
-		System.err.println("Undo not supported in " + getClass().getSimpleName());
+		System.err.println("?Undo not written yet");
 	}
 	
 	public void println(String s) {

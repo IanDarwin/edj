@@ -5,20 +5,34 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * Place for code that is common to all implementations of BufferPrimse
+ * @author ian
+ *
+ */
 public abstract class AbstractBufferPrims implements BufferPrims {
 	
 	protected List<String> buffer = new ArrayList<>();
 
-	/** The line number is a human-centric line number, e.g., starts at 1 */
+	/** 
+	 * The line number is a human-centric line number, e.g., 
+	 * starts at 1 when referring to actual lines,
+	 * is zero only when buffer is empty
+	 * */
 	protected int current = NO_NUM;
 	
 	public int size() {
 		return buffer.size();
 	}
-	
+
+	@Override
+	public int getCurrentLineNumber() {
+		return current;
+	}
+
 	private final static Pattern TWO_NUMS = Pattern.compile("^(\\d+),(\\d+)([a-z])$");
 	private final static Pattern ONE_NUM = Pattern.compile("^(\\d)([a-z])$");
-	
+
 	/** 
 	 * For input like "d", ",p", "12d", or "12,14d",
 	 * returns an int[3] with 0 = first line # or NO_NUM, 1 = 2nd line# or INF, 3 = cmd
@@ -45,12 +59,13 @@ public abstract class AbstractBufferPrims implements BufferPrims {
 		return range;
 	}
 
-	public void goToLine(int n) {
+	public int goToLine(int n) {
 		if (current == NO_NUM) {
-			return;
+			return NO_NUM;
 		}
 		if (n > buffer.size())
 			n = buffer.size() -1;
-		current = n;
+		return current = n;
 	}
+
 }
