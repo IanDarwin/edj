@@ -24,6 +24,13 @@ public class BufferPrimsWithUndo extends AbstractBufferPrims {
 		undoables.push(new UndoableCommand(name, r));
 	}
 
+	/** pop an undo - for authorized use only */
+	public void popUndo() {
+		if (!undoables.isEmpty()) {
+			undoables.pop();
+		}
+	}
+
 	public void printTOS() {
 		// System.out.println("Undo TOS: " + (undoables.isEmpty() ? "(empty)" : undoables.peek().name));
 	}
