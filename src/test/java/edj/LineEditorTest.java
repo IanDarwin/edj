@@ -30,7 +30,7 @@ public class LineEditorTest {
 	public void testGetLineRange1() {
 		int[] ret = target.getLineRange("6d");
 		assertEquals(6, ret[0]);
-		assertEquals(BufferPrims.INF, ret[1]);
+		assertEquals(6, ret[1]);
 		assertEquals('d', ret[2]);
 	}
 	

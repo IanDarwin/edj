@@ -55,7 +55,7 @@ public abstract class AbstractBufferPrims implements BufferPrims {
 		} else {
 			final Matcher matcher1 = ONE_NUM.matcher(line);
 			if (matcher1.matches()) {
-				range[0] = Integer.parseInt(matcher1.group(1));
+				range[0] = range[1] = Integer.parseInt(matcher1.group(1));
 			}
 		}
 		if (range[0] == BufferPrims.NO_NUM && getCurrentLineNumber() != 0) {
