@@ -89,17 +89,17 @@ public class BufferPrimsWithUndo extends AbstractBufferPrims {
 		pushUndo("read", () -> deleteLines(startLine, startLine + nl));
 	}
 	
-	public void printLines(int start, int j) {
+	public void printLines(int start, int end) {
 		if (current == NO_NUM) {
 			System.err.println("No lines in buffer");
 			return;
 		}
 		if (start == NO_NUM) {
-			println(buffer.get(current - 1));
+			println(buffer.get(lineNumToIndex(start)));
 			return;
 		}
-		for (int i = (start == NO_NUM ? 1 : start); i <= j && j < buffer.size(); i++) {
-			println(buffer.get(i - 1));
+		for (int i = (start == NO_NUM ? 1 : start); i <= end && end <= buffer.size(); i++) {
+			println(buffer.get(lineNumToIndex(i)));
 		}
 	}
 	
