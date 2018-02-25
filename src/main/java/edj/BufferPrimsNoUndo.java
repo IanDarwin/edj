@@ -3,6 +3,7 @@ package edj;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class BufferPrimsNoUndo extends AbstractBufferPrims {
@@ -27,10 +28,18 @@ public class BufferPrimsNoUndo extends AbstractBufferPrims {
 	 * @see edj.BufferPrims#removeLines(int, int)
 	 */
 	@Override
-	public void deleteLines(int start, int end) {
-		for (int i = start; i <= end; i++)
-			buffer.remove(start); // not i!
-		current -= (end - start);
+	public void deleteLines(int startLnum, int end) {
+		// System.out.println("BufferPrimsNoUndo.deleteLines(" + startLnum + ", " + end +")");
+		int startIx = lineNumToIndex(startLnum);
+		List<String> undoLines = new ArrayList<>();
+		for (int i = startIx; i < end; i++) {
+			if (buffer.isEmpty()) {
+				System.out.println("?Deleted all lines!");
+				return;
+			}
+			undoLines.add(buffer.remove(startIx)); // not i!
+		}
+		current = startLnum;
 	}
 	
 	public void clearBuffer() {

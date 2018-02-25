@@ -33,11 +33,20 @@ public abstract class AbstractBufferPrims implements BufferPrims {
 	private final static Pattern TWO_NUMS = Pattern.compile("^(\\d+),(\\d+)([a-z])$");
 	private final static Pattern ONE_NUM = Pattern.compile("^(\\d)([a-z])$");
 
+	protected int lineNumToIndex(int ln) {
+		if (ln == 0) {
+			ln = 1;
+		}
+		return ln - 1;
+	}
+	protected int indexToLineNum(int ix) {
+		return ix + 1;
+	}
 	/** 
 	 * For input like "d", ",p", "12d", or "12,14d",
 	 * returns an int[3] with 0 = first line # or NO_NUM, 1 = 2nd line# or INF, 3 = cmd
 	 */
-	int[] getLineRange(String line) {
+	protected int[] getLineRange(String line) {
 		int[] range = {BufferPrims.NO_NUM, BufferPrims.INF, '*'};
 		final Matcher matcher2 = TWO_NUMS.matcher(line);
 		if (matcher2.matches()) {
@@ -59,13 +68,14 @@ public abstract class AbstractBufferPrims implements BufferPrims {
 		return range;
 	}
 
-	public int goToLine(int n) {
+	public int goToLine(int ln) {
 		if (current == NO_NUM) {
 			return NO_NUM;
 		}
-		if (n > buffer.size())
-			n = buffer.size() -1;
-		return current = n;
+		int ix = lineNumToIndex(ln);
+		if (ix > buffer.size())
+			ix = buffer.size();
+		return current = ln;
 	}
 
 }

@@ -8,12 +8,7 @@ import java.util.List;
 import java.util.Stack;
 
 public class BufferPrimsWithUndo extends AbstractBufferPrims {
-	
-	// You don't actually need this in a non-GUI application
-	enum UndoableOp {
-		INSERT,
-		DELETE
-	}
+
 	class UndoableCommand {
 		public UndoableCommand(String name, Runnable r) {
 			this.name = name;
@@ -28,6 +23,16 @@ public class BufferPrimsWithUndo extends AbstractBufferPrims {
 	private void pushUndo(String name, Runnable r) {
 		undoables.push(new UndoableCommand(name, r));
 	}
+
+	public void printTOS() {
+		// System.out.println("Undo TOS: " + (undoables.isEmpty() ? "(empty)" : undoables.peek().name));
+	}
+	
+	public void clearBuffer() {
+		current = NO_NUM;
+		buffer.clear();
+		undoables.clear();		// can't undo after this!
+	}
 	
 	/* (non-Javadoc)
 	 * @see edj.BufferPrims#addLines(java.util.List)
@@ -40,28 +45,33 @@ public class BufferPrimsWithUndo extends AbstractBufferPrims {
 	 * @see edj.BufferPrims#addLines(int, java.util.List)
 	 */
 	@Override
-	public void addLines(int start, List<String> newLines) {
-		buffer.addAll(start, newLines);
+	public void addLines(int startLnum, List<String> newLines) {
+		// System.out.printf("BufferPrimsWithUndo.addLines(): start %d, size %d%n", startLnum, newLines.size());
+		int startIx = lineNumToIndex(startLnum);
+		buffer.addAll(startIx, newLines);
 		current += newLines.size();
-		pushUndo("add", () -> deleteLines(start, start + newLines.size()));
+		pushUndo("add " + newLines.size() + " lines", () -> deleteLines(startLnum, startLnum + newLines.size()));
 	}
 	
 	/* (non-Javadoc)
 	 * @see edj.BufferPrims#removeLines(int, int)
 	 */
 	@Override
-	public void deleteLines(int start, int end) {
+	public void deleteLines(int startLnum, int end) {
+		// System.out.println("BufferPrimsWithUndo.deleteLines(" + startLnum + ", " + end +")");
+		int startIx = lineNumToIndex(startLnum);
 		List<String> undoLines = new ArrayList<>();
-		for (int i = start; i <= end; i++)
-			undoLines.add(buffer.remove(start)); // not i!
-		current -= (end - start);
-		pushUndo("delete", () -> addLines(start, undoLines));
-	}
-	
-	public void clearBuffer() {
-		current = NO_NUM;
-		buffer.clear();
-		undoables.clear();		// can't undo after this!
+		for (int i = startIx; i < end; i++) {
+			// System.out.println("BufferPrimsWithUndo.deleteLines(): inner:");
+			if (buffer.isEmpty()) {
+				System.out.println("?Deleted all lines!");
+				return;
+			}
+			undoLines.add(buffer.remove(startIx)); // not i!
+		}
+		current = startLnum;
+		pushUndo("delete lines " + startLnum + " to " + end, 
+				() -> addLines(startLnum, undoLines));
 	}
 	
 	private int nl = 0, nch = 0; // Only accessed single-threadedly, only from readBuffer
@@ -100,9 +110,9 @@ public class BufferPrimsWithUndo extends AbstractBufferPrims {
 			return;
 		}
 		UndoableCommand undoable = undoables.pop();
-		System.out.println("Undoing " + undoable.name);
+		// System.out.println("Undoing " + undoable.name);
 		undoable.r.run();
-		if (undoables.empty()) {
+		if (!undoables.empty()) {
 			undoables.pop();		// all actions create undos, drop them so undo works normally
 		}
 	}

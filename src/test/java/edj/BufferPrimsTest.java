@@ -23,11 +23,18 @@ public abstract class BufferPrimsTest {
 	}
 
 	@Test
-	public void testAddThenDelete() {
+	public void testAdd3ThenDelete1() {
 		target.addLines(threeLines);
 		assertEquals(3, target.size());
 		target.deleteLines(1, 1);
 		assertEquals(2, target.size());
 	}
 
+	@Test
+	public void testAdd3ThenDelete3() {
+		target.addLines(threeLines);
+		assertEquals(3, target.size());
+		target.deleteLines(1, 3);
+		assertEquals(0, target.size());
+	}
 }
