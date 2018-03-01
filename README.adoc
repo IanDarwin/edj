@@ -19,10 +19,9 @@ It was also written to show that you can, in fact, do something small and
 	mvn package
 ----
 * Copy the _edj_ script to a directory on your path 
-(on MS-DOS-derived systems, copy it to _edj.bat_ and check the line endings).
+(on MS-DOS-derived systems, copy it to _edj.bat_, change $@ to %1, and check the line endings).
 * Copy the JAR file from _target/_ to someplace like $HOME/lib/
 * Hack the _edj_ script to find the jar file there.
-
 
 Invoke with a filename argument.
 
@@ -86,5 +85,16 @@ The following are NOT yet implemented:
 
 == History
 
+When computers were very young, there were no graphics systems for them, no touchscreens, no mice,
+only "terminals" that read from a keyboard and printed on paper. It was in this era that line editors
+were the dominant way of editing text for program source code, emails, instant messages, and so on.
+
 An _ed_ command that is recognizably the origin of this family of tools appeared in 
 Version 1 of AT&T Bell Labs Research UNIX around 1970.
+
+Versions of _ed_ have been in every flavor of Unix (including *BSD and Mac OS X),
+and in every Unix-like system (Linux etc.), since then.
+Berkeley Unix mutated _ed_ into _ex_, and then added _vi_sual editing mode, which became the
+_vi_ editor, in the late 1970's. Vi still _ex_ line mode editing built in.
+
+So this project is a months-young implementation of a fifty-year-old specification.
