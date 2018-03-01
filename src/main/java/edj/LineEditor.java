@@ -40,6 +40,7 @@ public class LineEditor {
 		while ((line = in.readLine())  != null) {
 			// System.out.println("Command Line is: " + line);
 
+			ParsedLine c = LineParser.parse(line);
 			// Try to keep in alphabetical order within each section
 			
 			// ------------
