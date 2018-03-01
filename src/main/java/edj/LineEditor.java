@@ -82,7 +82,7 @@ public class LineEditor {
 			// --------------
 
 			if (line.equals("=")) {
-				System.err.println(buffHandler.getCurrentLineNumber());
+				System.err.println(buffHandler.getCurrentLineNumber() + " of " + buffHandler.size());
 				continue;
 			}
 			if (line.equals(".")) {
