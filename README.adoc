@@ -58,7 +58,6 @@ The following are NOT yet implemented:
 
 [[unimplemented-commands]]
 .Unimplemented Commands
-.The Main Source Repositories
 [options="header",cols="2,3,5"]
 |====
 |Name|Stands for|Notes
@@ -73,7 +72,7 @@ The following are NOT yet implemented:
 |m|move|
 |n|-|
 |o|-|
-|s|substitute|\[linerange]s/old/new/[g] - replace old (regex) with new (text), once per line unless g
+|s|substitute|[linerange]s/old/new/[g] - replace old (regex) with new (text), once per line unless g
 |t|-|
 |v|inVert|like g but does non-matching lines
 |w|write|write to current file if any, or named file
