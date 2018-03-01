@@ -10,7 +10,8 @@ it into a useful line editor, you'll know that CLI fans have regained the
 upper hand in geekdom. Or not.
 
 It was also written to show that you can, in fact, do something small and 
-(possibly) useful without dragging in 47 different add-on JAR files.
+(possibly) useful in Java without dragging in 47 different add-on JAR files.
+This project has zero external run-time dependencies and only one test-time dependency (JUnit).
 
 == Usage
 
