@@ -18,7 +18,9 @@ public class LineEditor {
 	
 	protected static AbstractBufferPrims buffHandler = new BufferPrimsWithUndo();
 	
-	protected static BufferedReader in = null;
+	protected static BufferedReader in = null;	// command input
+
+	protected static String currentFileName;
 	
 	/** Should remove throws, use try-catch inside loop */
 	public static void main(String[] args) throws IOException {
@@ -26,7 +28,8 @@ public class LineEditor {
 		in = new BufferedReader(new InputStreamReader(System.in));
 
 		if (args.length == 1) {
-			buffHandler.readBuffer(args[0]);
+			currentFileName = args[0];
+			buffHandler.readBuffer(currentFileName);
 			// Since readBuffer can be used from here or interactively, here we drop its Undoable.
 			if (buffHandler instanceof BufferPrimsWithUndo) {
 				((BufferPrimsWithUndo)buffHandler).popUndo();
@@ -46,10 +49,20 @@ public class LineEditor {
 			// Edit a new file
 			if (line.startsWith("e")) {
 				buffHandler.clearBuffer();
-				buffHandler.readBuffer(line.substring(1).trim());
+				if (line.length() >= 3) 
+					currentFileName = line.substring(1).trim();
+				if (currentFileName == null) {
+					System.out.println("?no filename");
+				} else {
+					buffHandler.readBuffer(currentFileName);
+				}
 				continue;
 			}
-			// Like e but reads into current buffer
+			if (line.startsWith("f")) {
+				System.out.println(currentFileName == null ? "(no file)" : currentFileName);
+				continue;
+			}
+			// Like e but reads into current buffer w/o setting filename
 			if (line.startsWith("r")) {
 				buffHandler.readBuffer(line.substring(1).trim());
 				continue;
