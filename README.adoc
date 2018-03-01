@@ -3,7 +3,7 @@
 Edj (pronounced like the English word "edge") is the skeleton of 
 a simple line editor patterned after Unix ed(1).
 
-It was not created to be a useful editor - _you cannot yet save!_ - but to
+It was not created to be a useful editor - _you cannot yet save your work!_ - but to
 provide a platform for some demonstrations of Design Patterns in the Java
 language, notably the "undo" command. If someone (or even me) tries to turn
 it into a useful line editor, you'll know that CLI fans have regained the
@@ -20,7 +20,7 @@ This project has zero external run-time dependencies and only one test-time depe
 	mvn package
 ----
 * Copy the _edj_ script to a directory on your path 
-(on MS-DOS-derived systems, copy it to _edj.bat_, change $@ to %1, and check the line endings).
+(for MS-DOS-derived systems, somebody needs to write an _edj.bat_, do do the same thing).
 * Copy the JAR file from _target/_ to someplace like $HOME/lib/
 * Hack the _edj_ script to find the jar file there.
 
