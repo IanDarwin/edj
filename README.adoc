@@ -34,7 +34,7 @@ current line (most recendly added or modified) is meant.
 If only one line is intended, omit the comma and the second number.
 A command line that consists only of a line number will move the current line to that number.
 
-The special line number '$' is not implemented.
+The special line number '$' meaning 'last line' is not yet implemented.
 
 The following commands are implemented so far:
 
@@ -63,7 +63,7 @@ The following are NOT yet implemented:
 |====
 |Name|Stands for|Notes
 |b||
-|c|change|combines delet with append
+|c|change|combines delete with append
 |g|global|
 |h|-|
 |i|insert|Like a but inserts before current line
