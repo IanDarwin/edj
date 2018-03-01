@@ -36,27 +36,48 @@ public class LineEditor {
 		// The main loop of the editor is right here:
 		while ((line = in.readLine())  != null) {
 			// System.out.println("Command Line is: " + line);
+
+			// Try to keep in alphabetical order within each section
 			
+			// ------------
 			// FILE RELATED
+			// ------------
+
+			// Edit a new file
 			if (line.startsWith("e")) {
 				buffHandler.clearBuffer();
 				buffHandler.readBuffer(line.substring(1).trim());
 				continue;
 			}
+			// Like e but reads into current buffer
+			if (line.startsWith("r")) {
+				buffHandler.readBuffer(line.substring(1).trim());
+				continue;
+			}
+			// Quit
+			if (line.equals("q")) {
+				System.exit(0);
+			}
+			// Write - maybe someday
 			if (line.startsWith("w")) {
 				System.err.println("?file is read-only");
 				continue;
 			}
-			if (line.equals("q")) {
-				System.exit(0);
-			}
 			
+			// --------------
 			// BUFFER-RELATED
+			// --------------
+
 			if (line.equals("=")) {
 				System.err.println(buffHandler.getCurrentLineNumber());
 				continue;
 			}
-			if (line.equals("a")) {
+			if (line.equals(".")) {
+				int i = buffHandler.getCurrentLineNumber();
+				buffHandler.printLines(i, i);
+				continue;
+			}
+			if (line.equals("a")) {	// XXX accept line number
 				List<String> lines = gatherLines();
 				buffHandler.addLines(lines);
 				continue;
@@ -71,17 +92,13 @@ public class LineEditor {
 				buffHandler.printLines(range[0], range[1]);
 				continue;
 			}
-			if (line.equals(".")) {
-				int i = buffHandler.getCurrentLineNumber();
-				buffHandler.printLines(i, i);
-				continue;
-			}
 			if (line.equals("u")) {
 				buffHandler.undo();
 				continue;
 			}
 			if (line.matches("\\d+")) {
 				buffHandler.goToLine(Integer.parseInt(line));
+				continue;
 			}
 			// default: standard 'ed' error handling
 			System.out.println("?");
