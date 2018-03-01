@@ -34,7 +34,9 @@ current line (most recendly added or modified) is meant.
 If only one line is intended, omit the comma and the second number.
 A command line that consists only of a line number will move the current line to that number.
 
-The special line number '$' meaning 'last line' is not yet implemented.
+The special line number '$' (dollar sign) meaning 'last line' is not yet implemented.
+Line numbers beginning with '+' or '-' are not implemented.
+The special filename syntax beginning with '!' ('bang' or exclamation mark) will not be implemented.
 
 The following commands are implemented so far:
 
@@ -63,17 +65,17 @@ The following are NOT yet implemented:
 |Name|Stands for|Notes
 |b||
 |c|change|combines delete with append
-|g|global|
+|g|global|Not implemented, but g/RE/p is the origin of the grep command's name.
 |h|-|
 |i|insert|Like a but inserts before current line
 |j|join|merge current line and next line into one line
-|k|-|
+|k|marK|
 |l|list|Like p but expands unprintable characters
 |m|move|
 |n|-|
 |o|-|
 |s|substitute|[linerange]s/old/new/[g] - replace old (regex) with new (text), once per line unless g
-|t|-|
+|t|transfer|Copy lines
 |v|inVert|like g but does non-matching lines
 |w|write|write to current file if any, or named file
 |x|?|encrypt file
@@ -81,3 +83,8 @@ The following are NOT yet implemented:
 |z|-|
 |:|extention|That would start down the path from _ed_ to _ex_, and then _vi_. Not on my watch.
 |====
+
+== History
+
+An _ed_ command that is recognizably the origin of this family of tools appeared in 
+Version 1 of AT&T Bell Labs Research UNIX around 1970.
