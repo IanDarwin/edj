@@ -1,6 +1,7 @@
 package edj;
 
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -48,13 +49,17 @@ public class BufferPrimsNoUndo extends AbstractBufferPrims {
 	
 	private int nl = 0, nch = 0; // Only accessed single-threadedly
 
-	public void readBuffer(String fileName) throws IOException {
+	public void readBuffer(String fileName) {
 		try (BufferedReader bufferedReader = new BufferedReader(new FileReader(fileName))) {
 			bufferedReader.lines().forEach((s) -> {
 				nl++; nch += s.length();
 				buffer.add(s);
 				current++;
 			});
+		} catch (FileNotFoundException e) {
+			throw new BufferException("File " + fileName + " not found", e);
+		} catch (IOException e) {
+			throw new BufferException("File " + fileName + " failed during read", e);
 		}
 		println(String.format("%dL, %dC", nl, nch));
 	}

@@ -1,6 +1,5 @@
 package edj;
 
-import java.io.IOException;
 import java.util.List;
 
 /**
@@ -28,7 +27,7 @@ public interface BufferPrims {
 	
 	void clearBuffer();
 	
-	void readBuffer(String fileName) throws IOException;
+	void readBuffer(String fileName);
 
 	int getCurrentLineNumber();
 	

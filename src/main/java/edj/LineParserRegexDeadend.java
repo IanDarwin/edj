@@ -5,9 +5,11 @@ import java.util.regex.Pattern;
 
 /**
  * Newer parser that does a more complete job
- * @author ian
+ * Attempt to parse with RegEx, as often, ends badly
+ * when the input gets complicated.
+ * @author Ian Darwin
  */
-public class LineParser0 {
+public class LineParserRegexDeadend {
 
 	protected final static Pattern LINE_REGEX =
 		Pattern.compile("(\\d+|.)?(,(\\d+)?)?([a-z=/?\\+\\-])(.*)");

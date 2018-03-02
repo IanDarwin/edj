@@ -38,85 +38,96 @@ public class LineEditor {
 
 		// The main loop of the editor is right here:
 		while ((line = in.readLine())  != null) {
-			// System.out.println("Command Line is: " + line);
 
-			ParsedLine c = LineParser.parse(line);
-			// Try to keep in alphabetical order within each section
-			
-			// ------------
-			// FILE RELATED
-			// ------------
-
-			// Edit a new file
-			if (line.startsWith("e")) {
-				buffHandler.clearBuffer();
-				if (line.length() >= 3) 
-					currentFileName = line.substring(1).trim();
-				if (currentFileName == null) {
-					System.out.println("?no filename");
-				} else {
-					buffHandler.readBuffer(currentFileName);
-				}
+			ParsedLine pl = LineParser.parse(line, buffHandler);
+			if (pl == null) {
+				System.out.println("?");
 				continue;
 			}
-			if (line.startsWith("f")) {
-				System.out.println(currentFileName == null ? "(no file)" : currentFileName);
-				continue;
+			EditCommand c = commands[pl.cmdLetter];
+			if (c == null) {
+				System.out.println("? Unknown command in " + line);
+			} else {
+				c.execute(pl);
 			}
-			// Like e but reads into current buffer w/o setting filename
-			if (line.startsWith("r")) {
-				buffHandler.readBuffer(line.substring(1).trim());
-				continue;
-			}
-			// Quit
-			if (line.equals("q")) {
-				System.exit(0);
-			}
-			// Write - maybe someday
-			if (line.startsWith("w")) {
-				System.err.println("?file is read-only");
-				continue;
-			}
-			
-			// --------------
-			// BUFFER-RELATED
-			// --------------
-
-			if (line.equals("=")) {
-				System.err.println(buffHandler.getCurrentLineNumber() + " of " + buffHandler.size());
-				continue;
-			}
-			if (line.equals(".")) {
-				int i = buffHandler.getCurrentLineNumber();
-				buffHandler.printLines(i, i);
-				continue;
-			}
-			if (line.equals("a")) {	// XXX accept line number
-				List<String> lines = gatherLines();
-				buffHandler.addLines(lines);
-				continue;
-			}
-			if (line.endsWith("d")) {
-				int[] range = buffHandler.getLineRange(line);
-				buffHandler.deleteLines(range[0], range[1]);
-				continue;
-			}
-			if (line.endsWith("p")) {
-				int[] range = buffHandler.getLineRange(line);
-				buffHandler.printLines(range[0], range[1]);
-				continue;
-			}
-			if (line.equals("u")) {
-				buffHandler.undo();
-				continue;
-			}
-			if (line.matches("\\d+")) {
-				buffHandler.goToLine(Integer.parseInt(line));
-				continue;
-			}
-			// default: standard 'ed' error handling
-			System.out.println("?");
 		}
+	}
+		
+	static EditCommand commands[] = new EditCommand[255];
+	
+	static {
+		// Keep in alphabetical order
+
+		// = - print current line number
+		commands['='] = pl -> {
+			System.err.println(buffHandler.getCurrentLineNumber() + " of " + buffHandler.size());
+		};
+
+		// . - print current line
+		commands['.'] = pl -> {
+			int i = buffHandler.getCurrentLineNumber();
+			buffHandler.printLines(i, i);
+		};
+
+		// a - append lines
+		commands['a'] = pl -> {
+			List<String> lines = gatherLines();
+			buffHandler.addLines(lines);
+		};
+
+		// d - delete lines
+		commands['d'] = pl -> {
+			buffHandler.deleteLines(pl.startNum, pl.endNum);
+		};
+
+		// e - edit a new file
+		commands['e'] = pl -> {
+			buffHandler.clearBuffer();
+			if (!isEmpty(pl.operands)) {
+				currentFileName = pl.operands;
+			}
+			if (currentFileName == null) {
+				System.out.println("?no filename");
+			} else {
+				buffHandler.readBuffer(currentFileName);
+			}
+		};
+
+		// f - print (or set?) filename
+		commands['f'] = pl -> {
+			System.out.println(currentFileName == null ? "(no file)" : currentFileName);
+		};
+
+		// p - print lines
+		commands['p'] = pl -> {
+			buffHandler.printLines(pl.startNum, pl.endNum);
+		};
+
+		// q - quit the editor
+		commands['q'] = pl -> {
+			System.exit(0);
+		};
+
+		// r - read file into buffer
+		// Like e but reads into current buffer w/o setting filename
+		commands['r'] = pl -> {
+			buffHandler.readBuffer(isEmpty(pl.operands) ? currentFileName : pl.operands);
+		};
+
+		// u - undo last undoable
+		commands['u'] = pl -> {
+			buffHandler.undo();
+		};
+
+		// w - write file - maybe someday
+		commands['w'] = pl -> {
+			System.err.println("?file is read-only");
+		};
+		
+	}
+		
+	private static boolean isEmpty(String s) {
+		return s == null || s.trim().length() == 0;
 	}
 
 	/**
@@ -124,11 +135,15 @@ public class LineEditor {
 	 * @return The List of lines.
 	 * @throws IOException 
 	 */
-	private static List<String> gatherLines() throws IOException {
+	private static List<String> gatherLines() {
 		List<String> ret = new ArrayList<>();
-		String line;
-		while ((line = in.readLine()) != null && !line.equals(".")) {
-			ret.add(line);
+		try {
+			String line;
+			while ((line = in.readLine()) != null && !line.equals(".")) {
+				ret.add(line);
+			}
+		} catch (IOException e) {
+			throw new BufferException("IO Error reading from stdin!?", e);
 		}
 		return ret;
 	}

@@ -1,7 +1,5 @@
 package edj;
 
-import static edj.LineParser.LNUM_CUR;
-import static edj.LineParser.LNUM_DOLLAR;
 import static edj.LineParser.LNUM_NONE;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
@@ -18,6 +16,57 @@ import org.junit.runners.Parameterized.Parameters;
 @RunWith(value=Parameterized.class)
 public class LineParserTest {
 
+	private boolean expected;
+	private String input;		// the entire command as a String
+	private int lnum1, lnum2;
+	private String operands;	// The operand part, e.g, "foo" of "r foo"
+
+	private static BufferPrims buffHandler = new AbstractBufferPrims() {
+		
+		public int getCurrentLineNumber() {
+			return 3;
+		};
+		public int size() {
+			return 6;
+		}
+
+		@Override
+		public void addLines(List<String> newLines) {
+			// not used
+		}
+
+		@Override
+		public void addLines(int start, List<String> newLines) {
+			// notused
+		}
+
+		@Override
+		public void deleteLines(int start, int end) {
+			// notused
+		}
+
+		@Override
+		public void clearBuffer() {
+			// notused
+		}
+
+		@Override
+		public void readBuffer(String fileName) {
+			// notused
+		}
+
+		@Override
+		public void printLines(int i, int j) {
+			// notused
+		}
+
+		@Override
+		public void undo() {
+			// notused
+		}
+		
+	};
+
 	@Before
 	public void setUp() throws Exception {
 	}
@@ -25,33 +74,36 @@ public class LineParserTest {
 	/** This method provides data to the constructor for use in tests */
 	@Parameters
 	public static List<Object[]> data() {
+		final int current = buffHandler.getCurrentLineNumber();
+		final int size = buffHandler.size();
 		return Arrays.asList(new Object[][] {
-			{ true,  "1,2p", 1, 2 },
-			{ true,  ",p", LNUM_NONE, LNUM_NONE },	// print all
-			{ true,  ".p", LNUM_CUR, LNUM_NONE  },// print current
-			{ true,  "p", LNUM_NONE, LNUM_NONE  },
-			{ true,  "$p", LNUM_DOLLAR, LNUM_NONE  },
-			{ false,  "?", LNUM_NONE, LNUM_NONE  },
-			//{ true, "g/foo/s//bar/", 0, 0  },
-			{ false,  "*", 0, 0  },
+			{ true, "1,2p", 1, 2,null  },
+			{ true, "2p", 2, 2, null },
+			{ true, ",p", 1, buffHandler.size(), null  },	// print all
+			{ true, ".p", current, current, null  }, // print current
+			{ true, "p", current, current, null  },
+			{ true, "$p", size, size, null  },
+			{ true, "e 3lines.txt", current, current , "3lines.txt"  },
+			{ true, "g/foo/s//bar/", current, current, "/foo/s//bar/"  },
+			
+			// Test some failure modes
+			{ false,  "?", LNUM_NONE, LNUM_NONE, null  },	// ?patt? not implemented
+			{ false,  "*", 0, 0, null },						// random char
 		});
 	}
 
-	private boolean expected;
-	String input;
-	private int lnum1, lnum2;
-
 	/** Constructor, gets arguments from data array; cast as needed */
-	public LineParserTest(Boolean expected, String input, int lnum1, int lnum2) {
+	public LineParserTest(Boolean expected, String input, int lnum1, int lnum2, String operands) {
 		this.expected = expected;
 		this.input = input;
 		this.lnum1 = lnum1;
 		this.lnum2 = lnum2;
+		this.operands = operands;
 	}
 
 	@Test
 	public void testPositive() {
-		final ParsedLine parsed = LineParser.parse(input);
+		final ParsedLine parsed = LineParser.parse(input, buffHandler);
 		if (expected && parsed == null) {
 			fail("Did not parse " + input);
 		}
@@ -64,5 +116,8 @@ public class LineParserTest {
 		System.out.println("LineParserTest.testPositive: " + input + " ==> " + parsed);
 		assertEquals(lnum1, parsed.startNum);
 		assertEquals(lnum2, parsed.endNum);
+		if (operands != null) {
+			assertEquals(operands, parsed.operands);
+		}
 	}
 }
