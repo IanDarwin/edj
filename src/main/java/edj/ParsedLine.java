@@ -5,6 +5,7 @@ package edj;
  * What is to be done, but not how.
  */
 public class ParsedLine {
+	// Could be an enum but we use it to index an array directly
 	char cmdLetter; // 'a' for append, 'd' for delete, &c.
 	boolean startFound, commaFound, endFound;
 	int startNum, endNum;
