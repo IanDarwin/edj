@@ -54,6 +54,10 @@ public class LineParserTest {
 		public void readBuffer(String fileName) {
 			// notused
 		}
+		
+		public void writeBuffer(String fileName) {
+			// notused
+		}
 
 		@Override
 		public void printLines(int i, int j) {

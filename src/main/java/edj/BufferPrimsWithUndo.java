@@ -101,6 +101,10 @@ public class BufferPrimsWithUndo extends AbstractBufferPrims {
 		pushUndo("read", () -> deleteLines(startLine, startLine + nl));
 	}
 	
+	public void writeBuffer(String fileName) {
+		throw new UnsupportedOperationException();
+	}
+	
 	public void printLines(int start, int end) {
 		if (current == NO_NUM) {
 			System.err.println("No lines in buffer");

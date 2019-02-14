@@ -28,6 +28,8 @@ public interface BufferPrims {
 	void clearBuffer();
 	
 	void readBuffer(String fileName);
+	
+	void writeBuffer(String fileName);
 
 	int getCurrentLineNumber();
 	

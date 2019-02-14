@@ -64,6 +64,10 @@ public class BufferPrimsNoUndo extends AbstractBufferPrims {
 		println(String.format("%dL, %dC", nl, nch));
 	}
 	
+	public void writeBuffer(String fileName) {
+		throw new UnsupportedOperationException();
+	}
+	
 	public void printLines(int start, int j) {
 		if (current == NO_NUM) {
 			System.err.println("No lines in buffer");

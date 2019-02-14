@@ -4,8 +4,8 @@ Edj (pronounced like the English word "edge") is the skeleton of
 a simple line editor patterned after Unix ed(1).
 
 It was not created to be a useful editor - _you cannot yet save your work!_ - but to
-provide a platform for some demonstrations of Design Patterns in the Java
-language, notably the "undo" command. If someone (or even me) tries to turn
+provide a platform for some demonstrations of Design Patterns and related issues, particularly
+in the Java language, including the "undo" command. If someone (or even me) tries to turn
 it into a useful line editor, you'll know that CLI fans have regained the
 upper hand in geekdom. Or not.
 
