@@ -34,18 +34,19 @@ public interface BufferPrims {
 	}
 
 	int getCurrentLineNumber();
+	String getCurrentLine();
 	int goToLine(int n);
 	int size();			// Number of lines, as per old Collections
 
-	/** Retrieve one or more of lines (e.g., to print to stdout) */
+	/** Retrieve one or more of lines */
 	String getLine(int ln);
 	List<String> getLines(int i, int j);
 
-	void replace(String old, String newStr);	// replace first occurrence of 'old' regex w 'new' text, current line
-	void replaceAll(String old, String newStr); // replace All occurrences
-	void replace(String old, String newStr, int startLine, int endLine); // replace first occur in each line
-	void replaceAll(String old, String newStr, int startLine, int endLine);
-	
+	/** replace first/all occurrence of 'old' regex w 'new' text, current line */
+	void replace(String oldRE, String newStr, boolean all);	
+	/** replace first/all occur in each line */
+	void replace(String oldRE, String newStr, boolean all, int startLine, int endLine); 
+
 	boolean isUndoSupported();
 	
 	/** Undo the most recent operation: optional method */

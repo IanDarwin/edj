@@ -19,6 +19,7 @@ public class BufferPrimsStringBuffer implements BufferPrims {
 	protected void setBuffer(String contents) {
 		current = 0;
 		this.buffer = new StringBuffer(contents);
+		// Last line must end with newline
 		if (buffer.charAt(buffer.length() - 1) != '\n')
 			buffer.append('\n');
 	}
@@ -47,19 +48,26 @@ public class BufferPrimsStringBuffer implements BufferPrims {
 		}
 	}
 
-	protected int findLineOffset(int start) {
+	int findLineOffset(int startLineNum) {
 		if (buffer == null) {
 			throw new NullPointerException("findLine called with no buffer");
 		}
 		int j = 0, max = buffer.length();
-		for (int i = 0; i < start; i++) {
-			for (j = start; j < max; j++)
+		for (int i = 0; i < startLineNum; i++) {
+			for (j = startLineNum; j < max; j++)
 				if (buffer.charAt(j) == '\n') {
 					++j;	// skip the newline
 					break;
 				}
 		}
 		return j > max ? -1 : j;
+	}
+	
+	private int findLineLength(int startOffset) {
+		int offset = startOffset;
+		for (;buffer.charAt(startOffset) == '\n' && offset < buffer.length(); ++offset)
+			;// Do nothing; it's all in the loop;
+		return offset - startOffset;
 	}
 
 	@Override
@@ -100,11 +108,18 @@ public class BufferPrimsStringBuffer implements BufferPrims {
 		}
 		return count;
 	}
+	
+	@Override
+	public String getCurrentLine() {
+		// TODO
+		return null;
+	}
 
 	@Override
 	public String getLine(int ln) {
-		// TODO Auto-generated method stub
-		return null;
+		int startOffset = findLineOffset(ln);
+		int len = findLineLength(startOffset);
+		return buffer.substring(startOffset, startOffset + len);
 	}
 
 	@Override
@@ -114,22 +129,12 @@ public class BufferPrimsStringBuffer implements BufferPrims {
 	}
 	
 	@Override
-	public void replace(String old, String newStr) {
+	public void replace(String old, String newStr, boolean all) {
 		// TODO Auto-generated method stub
 	}
 
 	@Override
-	public void replaceAll(String old, String newStr) {
-		// TODO Auto-generated method stub
-	}
-
-	@Override
-	public void replace(String old, String newStr, int startLine, int endLine) {
-		// TODO Auto-generated method stub
-	}
-
-	@Override
-	public void replaceAll(String old, String newStr, int startLine, int endLine) {
+	public void replace(String old, String newStr, boolean all, int startLine, int endLine) {
 		// TODO Auto-generated method stub
 	}
 

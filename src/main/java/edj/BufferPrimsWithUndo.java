@@ -97,27 +97,7 @@ public class BufferPrimsWithUndo extends AbstractBufferPrims {
 	public void writeBuffer(String fileName) {
 		throw new UnsupportedOperationException();
 	}
-	
-	@Override
-	public void replace(String old, String newStr) {
-		// TODO Auto-generated method stub
-	}
 
-	@Override
-	public void replaceAll(String old, String newStr) {
-		// TODO Auto-generated method stub
-	}
-
-	@Override
-	public void replace(String old, String newStr, int startLine, int endLine) {
-		// TODO Auto-generated method stub
-	}
-
-	@Override
-	public void replaceAll(String old, String newStr, int startLine, int endLine) {
-		// TODO Auto-generated method stub
-	}
-	
 	/** If there are any undoable actions, pop the top one and run it. */
 	public void undo() {
 		if (undoables.empty()) {

@@ -25,6 +25,14 @@ public abstract class AbstractBufferPrims implements BufferPrims {
 	public int size() {
 		return buffer.size();
 	}
+	
+	/* (non-Javadoc)
+	 * @see edj.BufferPrims#clearBuffer()
+	 */
+	@Override
+	public void clearBuffer() {
+		// notused
+	}
 
 	/* (non-Javadoc)
 	 * @see edj.BufferPrims#addLines(java.util.List)
@@ -32,6 +40,29 @@ public abstract class AbstractBufferPrims implements BufferPrims {
 	@Override
 	public void addLines(List<String> newLines) {
 		addLines(current, newLines);
+	}
+	
+	/* (non-Javadoc)
+	 * @see edj.BufferPrims#removeLines(int, int)
+	 */
+	@Override
+	public void deleteLines(int startLnum, int end) {
+		// System.out.println("BufferPrimsNoUndo.deleteLines(" + startLnum + ", " + end +")");
+		int startIx = lineNumToIndex(startLnum);
+		List<String> undoLines = new ArrayList<>();
+		for (int i = startIx; i < end; i++) {
+			if (buffer.isEmpty()) {
+				System.out.println("?Deleted all lines!");
+				return;
+			}
+			undoLines.add(buffer.remove(startIx)); // not i!
+		}
+		current = startLnum;
+	}
+
+	@Override
+	public String getCurrentLine() {
+		return buffer.get(lineNumToIndex(current));
 	}
 
 	@Override
@@ -72,5 +103,24 @@ public abstract class AbstractBufferPrims implements BufferPrims {
 			ret.add(buffer.get(lineNumToIndex(i)));
 		}
 		return ret;
+	}
+	
+	@Override
+	public void replace(String oldRE, String newStr, boolean all) {
+		int ix = lineNumToIndex(current);
+		String target = buffer.get(ix);
+		buffer.set(lineNumToIndex(ix), all?
+			target.replaceAll(oldRE, newStr) :
+			target.replaceFirst(oldRE, newStr));
+	}
+
+	@Override
+	public void replace(String oldRE, String newStr, boolean all, int startLine, int endLine) {
+		for (int ix = startLine; ix <= endLine; ix++) {
+			String target = buffer.get(lineNumToIndex(ix));
+			buffer.set(lineNumToIndex(ix), all?
+					target.replaceAll(oldRE, newStr) :
+					target.replaceFirst(oldRE, newStr));
+		}
 	}
 }

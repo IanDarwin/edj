@@ -82,6 +82,15 @@ public class BufferPrimsTest {
 	}
 	
 	@Test
+	public void getGetOneLine() {
+		target.addLines(THREE_LINES);
+		String actual = target.getLine(2);
+		assertEquals("getline(2)", "Another Line", actual);
+		actual = target.getLine(3);
+		assertEquals("Third Line", actual);
+	}
+	
+	@Test
 	public void testGetLines() {
 		target.addLines(THREE_LINES);
 		assertEquals(3, target.size());

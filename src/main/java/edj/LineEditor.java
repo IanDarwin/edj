@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * LineEditor main program implements a very small subset of the Unix line editor ed(1).
+ * LineEditor main program - implements a very small subset of the Unix line editor ed(1).
  * It is NOT intended to be a real-world editor; the market for line editors is
  * rather limited, and is already served by ed. It is rather meant just as
  * a rather involved example of some design issues that arise in a text editor.
@@ -113,11 +113,39 @@ public class LineEditor {
 		commands['r'] = pl -> {
 			buffHandler.readBuffer(isEmpty(pl.operands) ? currentFileName : pl.operands);
 		};
+		
+		// s - substitute s/old/new/ - old may be regex, new is string
+		commands['s'] = pl -> {
+			// Figure out line range
+			int[] range = pl.lineRange();
+			// Figure out rest of line, should be something like /oldRE/newStr/[g]
+			// Any char not in the two strings can be used as delimiter
+			String[] operands = pl.operands.split(pl.operands.substring(0, 1));
+			// s=abc=def=g results [ "", "abc", "def", "g"]
+			if (operands.length == 1) {
+				System.out.println("? s/oldRe/newStr/[g]");
+			}
+			String oldStr = operands[1];
+			String newStr = operands.length > 2 ? operands[2] : "";
+			boolean global = operands.length == 4 && operands[3].contains("g");
+			boolean print = operands.length == 4 && operands[3].contains("p");
+			if (range.length == 0) {			// current line only
+				buffHandler.replace(oldStr, newStr, global);
+				if (print) {
+					System.out.println(buffHandler.getCurrentLine());
+				}
+			} else {							// replace across range of lines
+				buffHandler.replace(oldStr, newStr, global, range[0], range[1]);
+				if (print) {
+					System.out.println(buffHandler.getCurrentLine());
+				}
+			}
+		};
 
 		// u - undo last undoable
 		commands['u'] = pl -> {
 			if (buffHandler.isUndoSupported()) {
-			buffHandler.undo();
+				buffHandler.undo();
 			} else {
 				System.out.println("?Undo not supported");
 			}

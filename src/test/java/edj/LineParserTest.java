@@ -31,22 +31,7 @@ public class LineParserTest {
 		}
 
 		@Override
-		public void addLines(List<String> newLines) {
-			// not used
-		}
-
-		@Override
 		public void addLines(int start, List<String> newLines) {
-			// notused
-		}
-
-		@Override
-		public void deleteLines(int start, int end) {
-			// notused
-		}
-
-		@Override
-		public void clearBuffer() {
 			// notused
 		}
 
@@ -64,26 +49,6 @@ public class LineParserTest {
 			// notused
 			return null;
 		}
-		
-		@Override
-		public void replace(String old, String newStr) {
-			// notused
-		}
-
-		@Override
-		public void replaceAll(String old, String newStr) {
-			// notused
-		}
-
-		@Override
-		public void replace(String old, String newStr, int startLine, int endLine) {
-			// notused
-		}
-
-		@Override
-		public void replaceAll(String old, String newStr, int startLine, int endLine) {
-			// notused
-		}
 
 		@Override
 		public void undo() {
@@ -94,7 +59,7 @@ public class LineParserTest {
 		public boolean isUndoSupported() {
 			return false;
 		}
-		
+
 	};
 
 	@Before
