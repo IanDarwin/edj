@@ -20,9 +20,12 @@ public class BufferPrimsTest {
 		this.clazz = clazz;
 	}
 	
-	@Parameters
+	@Parameters(name = "{0}")
 	public static Class<BufferPrims>[] params() {
-		return (Class<BufferPrims>[]) new Class<?>[] { BufferPrimsStringBuffer.class, BufferPrimsNoUndo.class, BufferPrimsWithUndo.class };
+		return (Class<BufferPrims>[]) new Class<?>[] { 
+			BufferPrimsStringBuffer.class, 
+			BufferPrimsNoUndo.class, 
+			BufferPrimsWithUndo.class };
 	}
 	
 	protected BufferPrims target;
@@ -32,11 +35,11 @@ public class BufferPrimsTest {
 		target = clazz.newInstance();
 	}
 
-	protected List<String> threeLines = Arrays.asList("One Line", "Another Line", "Third Line");
+	protected final List<String> THREE_LINES = Arrays.asList("One Line", "Another Line", "Third Line");
 
 	@Test
 	public void testAdd() {
-		target.addLines(threeLines);
+		target.addLines(THREE_LINES);
 		assertEquals(3, target.size());
 		assertEquals(3, target.getCurrentLineNumber());
 		target.addLines(Arrays.asList("Third Line"));
@@ -45,7 +48,7 @@ public class BufferPrimsTest {
 
 	@Test
 	public void testAdd3ThenDelete1() {
-		target.addLines(threeLines);
+		target.addLines(THREE_LINES);
 		assertEquals(3, target.size());
 		target.deleteLines(1, 1);
 		assertEquals(2, target.size());
@@ -53,7 +56,7 @@ public class BufferPrimsTest {
 
 	@Test
 	public void testAdd3ThenDelete3() {
-		target.addLines(threeLines);
+		target.addLines(THREE_LINES);
 		assertEquals(3, target.size());
 		target.deleteLines(1, 3);
 		assertEquals(0, target.size());
@@ -64,7 +67,7 @@ public class BufferPrimsTest {
 		if (!target.isUndoSupported()) {
 			return;
 		}
-		target.addLines(threeLines);
+		target.addLines(THREE_LINES);
 		((BufferPrimsWithUndo) target).printTOS();
 		assertEquals(3, target.size());
 		target.deleteLines(1, 1);
@@ -76,5 +79,15 @@ public class BufferPrimsTest {
 		target.undo();	// undo addLines
 		((BufferPrimsWithUndo) target).printTOS();
 		assertEquals(0, target.size());
+	}
+	
+	@Test
+	public void testGetLines() {
+		target.addLines(THREE_LINES);
+		assertEquals(3, target.size());
+		final List<String> ret = target.getLines(2, 3);
+		assertEquals(2, ret.size());
+		assertEquals("Another Line", ret.get(0));
+		assertEquals("Third Line", ret.get(1));
 	}
 }

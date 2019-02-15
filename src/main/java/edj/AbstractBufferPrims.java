@@ -1,12 +1,12 @@
 package edj;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
- * Place for code that is common to all implementations of BufferPrimse
- * @author ian
- *
+ * Place for code that is common to all List<String>-based implementations of BufferPrimse
+ * @author Ian Darwin
  */
 public abstract class AbstractBufferPrims implements BufferPrims {
 	
@@ -19,8 +19,19 @@ public abstract class AbstractBufferPrims implements BufferPrims {
 	 * */
 	protected int current = NO_NUM;
 	
+	/* (non-Javadoc)
+	 * @see edj.BufferPrims#size()
+	 */
 	public int size() {
 		return buffer.size();
+	}
+
+	/* (non-Javadoc)
+	 * @see edj.BufferPrims#addLines(java.util.List)
+	 */
+	@Override
+	public void addLines(List<String> newLines) {
+		addLines(current, newLines);
 	}
 
 	@Override
@@ -47,5 +58,19 @@ public abstract class AbstractBufferPrims implements BufferPrims {
 			ix = buffer.size();
 		return current = ln;
 	}
+	
+	public String getLine(int ln) {
+		return buffer.get(lineNumToIndex(ln));
+	}
 
+	public List<String> getLines(int start, int end) {
+		if (buffer.size() == 0) {
+			return Collections.emptyList();
+		}
+		List<String> ret = new ArrayList<>();
+		for (int i = start; i <= end && i <= buffer.size(); i++) {
+			ret.add(buffer.get(lineNumToIndex(i)));
+		}
+		return ret;
+	}
 }

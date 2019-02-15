@@ -64,6 +64,26 @@ public class LineParserTest {
 			// notused
 			return null;
 		}
+		
+		@Override
+		public void replace(String old, String newStr) {
+			// notused
+		}
+
+		@Override
+		public void replaceAll(String old, String newStr) {
+			// notused
+		}
+
+		@Override
+		public void replace(String old, String newStr, int startLine, int endLine) {
+			// notused
+		}
+
+		@Override
+		public void replaceAll(String old, String newStr, int startLine, int endLine) {
+			// notused
+		}
 
 		@Override
 		public void undo() {

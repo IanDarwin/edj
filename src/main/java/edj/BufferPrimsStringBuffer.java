@@ -102,9 +102,35 @@ public class BufferPrimsStringBuffer implements BufferPrims {
 	}
 
 	@Override
+	public String getLine(int ln) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
 	public List<String> getLines(int i, int j) {
 		// TODO Auto-generated method stub
 		return Collections.emptyList();
+	}
+	
+	@Override
+	public void replace(String old, String newStr) {
+		// TODO Auto-generated method stub
+	}
+
+	@Override
+	public void replaceAll(String old, String newStr) {
+		// TODO Auto-generated method stub
+	}
+
+	@Override
+	public void replace(String old, String newStr, int startLine, int endLine) {
+		// TODO Auto-generated method stub
+	}
+
+	@Override
+	public void replaceAll(String old, String newStr, int startLine, int endLine) {
+		// TODO Auto-generated method stub
 	}
 
 	/** Undo not supported */

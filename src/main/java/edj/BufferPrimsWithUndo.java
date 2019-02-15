@@ -5,7 +5,6 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Stack;
 
@@ -42,14 +41,7 @@ public class BufferPrimsWithUndo extends AbstractBufferPrims {
 		buffer.clear();
 		undoables.clear();		// can't undo after this!
 	}
-	
-	/* (non-Javadoc)
-	 * @see edj.BufferPrims#addLines(java.util.List)
-	 */
-	@Override
-	public void addLines(List<String> newLines) {
-		addLines(current, newLines);
-	}
+
 	/* (non-Javadoc)
 	 * @see edj.BufferPrims#addLines(int, java.util.List)
 	 */
@@ -106,19 +98,24 @@ public class BufferPrimsWithUndo extends AbstractBufferPrims {
 		throw new UnsupportedOperationException();
 	}
 	
-	public List<String> getLines(int start, int j) {
-		if (current == NO_NUM) {
-			return Collections.emptyList();
-		}
-		List<String> ret = new ArrayList<>();
-		if (start == NO_NUM) {
-			ret.add(buffer.get(current - 1));
-			return ret;
-		}
-		for (int i = (start == NO_NUM ? 1 : start); i <= j && j < buffer.size(); i++) {
-			ret.add(buffer.get(i - 1));
-		}
-		return ret;
+	@Override
+	public void replace(String old, String newStr) {
+		// TODO Auto-generated method stub
+	}
+
+	@Override
+	public void replaceAll(String old, String newStr) {
+		// TODO Auto-generated method stub
+	}
+
+	@Override
+	public void replace(String old, String newStr, int startLine, int endLine) {
+		// TODO Auto-generated method stub
+	}
+
+	@Override
+	public void replaceAll(String old, String newStr, int startLine, int endLine) {
+		// TODO Auto-generated method stub
 	}
 	
 	/** If there are any undoable actions, pop the top one and run it. */

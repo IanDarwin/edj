@@ -38,12 +38,13 @@ public interface BufferPrims {
 	int size();			// Number of lines, as per old Collections
 
 	/** Retrieve one or more of lines (e.g., to print to stdout) */
+	String getLine(int ln);
 	List<String> getLines(int i, int j);
 
-	// void replace(old, new);	// replace first occurrence of 'old' regex w 'new' text, current line
-	// void replaceAll(old, new); // replace All occurrences
-	// void replace(old, new, startLine, endLine); // replace first occur in each line
-	// void replaceAll(old, new, startLine, endLine);
+	void replace(String old, String newStr);	// replace first occurrence of 'old' regex w 'new' text, current line
+	void replaceAll(String old, String newStr); // replace All occurrences
+	void replace(String old, String newStr, int startLine, int endLine); // replace first occur in each line
+	void replaceAll(String old, String newStr, int startLine, int endLine);
 	
 	boolean isUndoSupported();
 	
