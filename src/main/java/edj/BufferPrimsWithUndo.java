@@ -132,6 +132,9 @@ public class BufferPrimsWithUndo extends AbstractBufferPrims {
 			undoables.pop();		// all actions create undos, drop them so undo works normally
 		}
 	}
+	public boolean isUndoSupported() {
+		return true;
+	}
 	
 	public void println(String s) {
 		System.out.println(s);

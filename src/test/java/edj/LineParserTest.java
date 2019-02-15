@@ -69,6 +69,11 @@ public class LineParserTest {
 			// notused
 		}
 		
+		@Override
+		public boolean isUndoSupported() {
+			return false;
+		}
+		
 	};
 
 	@Before

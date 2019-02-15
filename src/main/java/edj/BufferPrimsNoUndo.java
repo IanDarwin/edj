@@ -83,7 +83,10 @@ public class BufferPrimsNoUndo extends AbstractBufferPrims {
 	}
 	
 	public void undo() {
-		System.err.println("?Undo not written yet");
+		throw new UnsupportedOperationException();
+	}
+	public boolean isUndoSupported() {
+		return false;
 	}
 	
 	public void println(String s) {
