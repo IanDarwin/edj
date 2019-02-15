@@ -60,8 +60,9 @@ public class LineParserTest {
 		}
 
 		@Override
-		public void printLines(int i, int j) {
+		public List<String> getLines(int i, int j) {
 			// notused
+			return null;
 		}
 
 		@Override

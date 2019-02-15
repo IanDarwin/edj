@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Stack;
 
@@ -105,18 +106,19 @@ public class BufferPrimsWithUndo extends AbstractBufferPrims {
 		throw new UnsupportedOperationException();
 	}
 	
-	public void printLines(int start, int end) {
+	public List<String> getLines(int start, int j) {
 		if (current == NO_NUM) {
-			System.err.println("No lines in buffer");
-			return;
+			return Collections.emptyList();
 		}
+		List<String> ret = new ArrayList<>();
 		if (start == NO_NUM) {
-			println(buffer.get(lineNumToIndex(start)));
-			return;
+			ret.add(buffer.get(current - 1));
+			return ret;
 		}
-		for (int i = (start == NO_NUM ? 1 : start); i <= end && end <= buffer.size(); i++) {
-			println(buffer.get(lineNumToIndex(i)));
+		for (int i = (start == NO_NUM ? 1 : start); i <= j && j < buffer.size(); i++) {
+			ret.add(buffer.get(i - 1));
 		}
+		return ret;
 	}
 	
 	/** If there are any undoable actions, pop the top one and run it. */

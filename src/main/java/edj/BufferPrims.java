@@ -37,10 +37,10 @@ public interface BufferPrims {
 	int goToLine(int n);
 	int size();			// Number of lines, as per old Collections
 
-	/** Print one or more of lines (presumably to stdout) */
-	void printLines(int i, int j);
+	/** Retrieve one or more of lines (e.g., to print to stdout) */
+	List<String> getLines(int i, int j);
 
-	// void replace(old, new);	// replace first occurrence, current line
+	// void replace(old, new);	// replace first occurrence of 'old' regex w 'new' text, current line
 	// void replaceAll(old, new); // replace All occurrences
 	// void replace(old, new, startLine, endLine); // replace first occur in each line
 	// void replaceAll(old, new, startLine, endLine);

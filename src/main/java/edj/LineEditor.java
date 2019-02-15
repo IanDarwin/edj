@@ -7,10 +7,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * LineEditor implements a very small subset of the Unix line editor ed(1).
+ * LineEditor main program implements a very small subset of the Unix line editor ed(1).
  * It is NOT intended to be a real-world editor; the market for line editors is
  * rather limited, and is already served by ed. It is rather meant just as
- * a rather involved example of the Command pattern, used to implement Undo.
+ * a rather involved example of some design issues that arise in a text editor.
  * 
  * @author Ian Darwin
  */
@@ -66,7 +66,7 @@ public class LineEditor {
 		// . - print current line
 		commands['.'] = pl -> {
 			int i = buffHandler.getCurrentLineNumber();
-			buffHandler.printLines(i, i);
+			buffHandler.getLines(i, i);
 		};
 
 		// a - append lines
@@ -100,7 +100,7 @@ public class LineEditor {
 
 		// p - print lines
 		commands['p'] = pl -> {
-			buffHandler.printLines(pl.startNum, pl.endNum);
+			buffHandler.getLines(pl.startNum, pl.endNum).forEach(System.out::println);
 		};
 
 		// q - quit the editor
@@ -116,7 +116,11 @@ public class LineEditor {
 
 		// u - undo last undoable
 		commands['u'] = pl -> {
+			if (buffHandler.isUndoSupported()) {
 			buffHandler.undo();
+			} else {
+				System.out.println("?Undo not supported");
+			}
 		};
 
 		// w - write file - maybe someday

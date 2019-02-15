@@ -1,5 +1,6 @@
 package edj;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -101,9 +102,9 @@ public class BufferPrimsStringBuffer implements BufferPrims {
 	}
 
 	@Override
-	public void printLines(int i, int j) {
+	public List<String> getLines(int i, int j) {
 		// TODO Auto-generated method stub
-
+		return Collections.emptyList();
 	}
 
 	/** Undo not supported */
