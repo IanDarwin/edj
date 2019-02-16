@@ -49,13 +49,12 @@ public abstract class AbstractBufferPrims implements BufferPrims {
 	public void deleteLines(int startLnum, int end) {
 		// System.out.println("BufferPrimsNoUndo.deleteLines(" + startLnum + ", " + end +")");
 		int startIx = lineNumToIndex(startLnum);
-		List<String> undoLines = new ArrayList<>();
 		for (int i = startIx; i < end; i++) {
 			if (buffer.isEmpty()) {
 				System.out.println("?Deleted all lines!");
 				return;
 			}
-			undoLines.add(buffer.remove(startIx)); // not i!
+			buffer.remove(startIx); // not i!
 		}
 		current = startLnum;
 	}
