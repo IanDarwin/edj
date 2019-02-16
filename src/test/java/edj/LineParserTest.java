@@ -20,6 +20,7 @@ public class LineParserTest {
 	private String input;		// the entire command as a String
 	private int lnum1, lnum2;
 	private String operands;	// The operand part, e.g, "foo" of "r foo"
+	private final static boolean verbose = false;
 
 	private static BufferPrims buffHandler = new AbstractBufferPrims() {
 		
@@ -67,7 +68,7 @@ public class LineParserTest {
 	}
 
 	/** This method provides data to the constructor for use in tests */
-	@Parameters
+	@Parameters(name="{1}")
 	public static List<Object[]> data() {
 		final int current = buffHandler.getCurrentLineNumber();
 		final int size = buffHandler.size();
@@ -108,7 +109,8 @@ public class LineParserTest {
 		if (parsed == null) {
 			return;
 		}
-		System.out.println("LineParserTest.testPositive: " + input + " ==> " + parsed);
+		if (verbose)
+			System.out.println("LineParserTest.testPositive: " + input + " ==> " + parsed);
 		assertEquals(lnum1, parsed.startNum);
 		assertEquals(lnum2, parsed.endNum);
 		if (operands != null) {
