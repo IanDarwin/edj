@@ -1,7 +1,10 @@
 package edj;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Implement BufferPrims with a single long string with \n delimiting lines
@@ -38,7 +41,7 @@ public class BufferPrimsStringBuffer implements BufferPrims {
 		int offset = findLineOffset(start);
 		addLinesInternal(offset, newLines);
 	}
-	
+
 	public void addLinesInternal(int offset, List<String> newLines) {
 		for (String s : newLines) {
 			buffer.insert(offset, s);
@@ -48,24 +51,27 @@ public class BufferPrimsStringBuffer implements BufferPrims {
 		}
 	}
 
+	static final Pattern linesPatt = Pattern.compile(".*?\n");
+
 	int findLineOffset(int startLineNum) {
 		if (buffer == null) {
 			throw new NullPointerException("findLine called with no buffer");
 		}
-		int j = 0, max = buffer.length();
-		for (int i = 0; i < startLineNum; i++) {
-			for (j = startLineNum; j < max; j++)
-				if (buffer.charAt(j) == '\n') {
-					++j;	// skip the newline
-					break;
-				}
+		Matcher matcher = linesPatt.matcher(buffer);
+		int offset = 0;
+		for (int i = 1; i < startLineNum; i++) {
+			if (!matcher.find()) {
+				System.err.println("No line found for line " + i);
+				return -1;
+			}
+			offset += matcher.group(0).length();
 		}
-		return j > max ? -1 : j;
+		return offset;
 	}
-	
-	private int findLineLength(int startOffset) {
-		int offset = startOffset;
-		for (;buffer.charAt(startOffset) == '\n' && offset < buffer.length(); ++offset)
+
+	int findLineLengthAt(int startOffset) {
+		int offset;
+		for (offset = startOffset; buffer.charAt(offset) != '\n' && offset < buffer.length(); ++offset)
 			;// Do nothing; it's all in the loop;
 		return offset - startOffset;
 	}
@@ -73,7 +79,6 @@ public class BufferPrimsStringBuffer implements BufferPrims {
 	@Override
 	public void deleteLines(int start, int end) {
 		// TODO Auto-generated method stub
-
 	}
 
 	@Override
@@ -108,7 +113,7 @@ public class BufferPrimsStringBuffer implements BufferPrims {
 		}
 		return count;
 	}
-	
+
 	@Override
 	public String getCurrentLine() {
 		// TODO
@@ -118,16 +123,24 @@ public class BufferPrimsStringBuffer implements BufferPrims {
 	@Override
 	public String getLine(int ln) {
 		int startOffset = findLineOffset(ln);
-		int len = findLineLength(startOffset);
+		int len = findLineLengthAt(startOffset);
 		return buffer.substring(startOffset, startOffset + len);
 	}
 
 	@Override
-	public List<String> getLines(int i, int j) {
-		// TODO Auto-generated method stub
+	public List<String> getLines(int start, int end) {
+		if (end < start) {
+			throw new IllegalArgumentException();
+		}
+		if (buffer == null || buffer.length() == 0)
 		return Collections.emptyList();
+		List<String> ret = new ArrayList<>();
+		for (int i = start; i <= end; i++) {
+			ret.add(getLine(i));
+		}
+		return ret;
 	}
-	
+
 	@Override
 	public void replace(String old, String newStr, boolean all) {
 		// TODO Auto-generated method stub
@@ -140,13 +153,14 @@ public class BufferPrimsStringBuffer implements BufferPrims {
 
 	/** Undo not supported */
 	@Override
-	public void undo() {
-		throw new UnsupportedOperationException();
-	}
 	public boolean isUndoSupported() {
 		return false;
 	}
-	
+	@Override
+	public void undo() {
+		throw new UnsupportedOperationException();
+	}
+
 	/** This object as a String == the Buffer as a String */
 	@Override
 	public String toString() {
