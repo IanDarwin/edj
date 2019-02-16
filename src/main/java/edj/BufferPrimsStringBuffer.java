@@ -90,7 +90,7 @@ public class BufferPrimsStringBuffer implements BufferPrims {
 		}
 		int startOffset = findLineOffset(start),
 				endOffset = findLineOffset(end);
-		buffer.delete(startOffset, endOffset);
+		buffer.delete(startOffset, endOffset + findLineLengthAt(endOffset) + 1);
 	}
 
 	@Override

@@ -73,4 +73,10 @@ public class BufferPrimsStringBufferTest {
 		assertEquals("find line length", 11, len);
 	}
 
+	@Test
+	public void testDeleteLines() {
+		target.setBuffer(FOUR_LINES);
+		target.deleteLines(2, 3);
+		assertEquals(2, target.size());
+	}
 }
