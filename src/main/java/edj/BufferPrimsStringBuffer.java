@@ -1,5 +1,8 @@
 package edj;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -25,6 +28,10 @@ public class BufferPrimsStringBuffer implements BufferPrims {
 		// Last line must end with newline
 		if (buffer.charAt(buffer.length() - 1) != '\n')
 			buffer.append('\n');
+	}
+
+	protected void addLine(String s) {
+		buffer.append(s).append('\n');
 	}
 
 	@Override
@@ -78,7 +85,12 @@ public class BufferPrimsStringBuffer implements BufferPrims {
 
 	@Override
 	public void deleteLines(int start, int end) {
-		// TODO Auto-generated method stub
+		if (start > end) {
+			throw new IllegalArgumentException();
+		}
+		int startOffset = findLineOffset(start),
+				endOffset = findLineOffset(end);
+		buffer.delete(startOffset, endOffset);
 	}
 
 	@Override
@@ -89,8 +101,12 @@ public class BufferPrimsStringBuffer implements BufferPrims {
 
 	@Override
 	public void readBuffer(String fileName) {
-		// TODO Auto-generated method stub
-
+		// we must process line-at-a-time to ensure we have only \n at end of each line
+		try (BufferedReader rdr = new BufferedReader(new FileReader(fileName))) {
+			rdr.lines().forEach(this::addLine);
+		} catch (IOException ex) {
+			throw new RuntimeException("Error reading file " + fileName, ex);
+		}
 	}
 
 	@Override
