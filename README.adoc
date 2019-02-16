@@ -50,9 +50,11 @@ The following commands are implemented so far:
 |a|append|Type lines, end with "." on line by itself
 |d|delete|
 |e|edit|load a new file and make it the current file
-|f|filename|Print the current filename (does not set it)
+|f|filename|Print or set the current filename
+|p|print|Print the line or lines
 |q|quit|Does not currently prompt for unsaved changes
 |r|read|read named file into buffer
+|s|substitute|[linerange]s/old/new/[g][p] - replace old (regex) with new (text), once per line unless g
 |u|undo|Undoes last modify command
 |====
 
@@ -63,18 +65,17 @@ The following are NOT yet implemented:
 [options="header",cols="2,3,5"]
 |====
 |Name|Stands for|Notes
-|b||
+|b|-|
 |c|change|combines delete with append
 |g|global|Not implemented, but g/RE/p is the origin of the grep command's name.
 |h|-|
-|i|insert|Like a but inserts before current line
+|i|insert|Like 'a' but inserts before current line
 |j|join|merge current line and next line into one line
 |k|marK|
 |l|list|Like p but expands unprintable characters
 |m|move|
 |n|-|
 |o|-|
-|s|substitute|[linerange]s/old/new/[g] - replace old (regex) with new (text), once per line unless g
 |t|transfer|Copy lines
 |v|inVert|like g but does non-matching lines
 |w|write|write to current file if any, or named file
