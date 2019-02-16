@@ -1,6 +1,7 @@
 package edj;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
@@ -16,7 +17,7 @@ import java.util.List;
  */
 public class LineEditor {
 	
-	protected static AbstractBufferPrims buffHandler = new BufferPrimsWithUndo();
+	protected static AbstractBufferPrims buffPrims = new BufferPrimsWithUndo();
 	
 	protected static BufferedReader in = null;	// command input
 
@@ -28,18 +29,17 @@ public class LineEditor {
 		in = new BufferedReader(new InputStreamReader(System.in));
 
 		if (args.length == 1) {
-			currentFileName = args[0];
-			buffHandler.readBuffer(currentFileName);
+			readFile(currentFileName = args[0]);
 			// Since readBuffer can be used from here or interactively, here we drop its Undoable.
-			if (buffHandler instanceof BufferPrimsWithUndo) {
-				((BufferPrimsWithUndo)buffHandler).popUndo();
+			if (buffPrims instanceof BufferPrimsWithUndo) {
+				((BufferPrimsWithUndo)buffPrims).popUndo();
 			}
 		}
 
 		// The main loop of the editor is right here:
 		while ((line = in.readLine())  != null) {
 
-			ParsedLine pl = LineParser.parse(line, buffHandler);
+			ParsedLine pl = LineParser.parse(line, buffPrims);
 			if (pl == null) {
 				System.out.println("?");
 				continue;
@@ -60,47 +60,46 @@ public class LineEditor {
 
 		// = - print current line number
 		commands['='] = pl -> {
-			System.err.println(buffHandler.getCurrentLineNumber() + " of " + buffHandler.size());
+			System.err.println(buffPrims.getCurrentLineNumber() + " of " + buffPrims.size());
 		};
 
 		// . - print current line
 		commands['.'] = pl -> {
-			int i = buffHandler.getCurrentLineNumber();
-			buffHandler.getLines(i, i);
+			int i = buffPrims.getCurrentLineNumber();
+			buffPrims.getLines(i, i);
 		};
 
 		// a - append lines
 		commands['a'] = pl -> {
 			List<String> lines = gatherLines();
-			buffHandler.addLines(lines);
+			buffPrims.addLines(lines);
 		};
 
 		// d - delete lines
 		commands['d'] = pl -> {
-			buffHandler.deleteLines(pl.startNum, pl.endNum);
+			buffPrims.deleteLines(pl.startNum, pl.endNum);
 		};
 
 		// e - edit a new file
 		commands['e'] = pl -> {
-			buffHandler.clearBuffer();
+			buffPrims.clearBuffer();
 			if (!isEmpty(pl.operands)) {
 				currentFileName = pl.operands;
 			}
-			if (currentFileName == null) {
-				System.out.println("?no filename");
-			} else {
-				buffHandler.readBuffer(currentFileName);
-			}
+			readFile(currentFileName);
 		};
 
 		// f - print (or set?) filename
 		commands['f'] = pl -> {
+			if (!isEmpty(pl.operands)) {
+				currentFileName = pl.operands;
+			}
 			System.out.println(currentFileName == null ? "(no file)" : currentFileName);
 		};
 
 		// p - print lines
 		commands['p'] = pl -> {
-			buffHandler.getLines(pl.startNum, pl.endNum).forEach(System.out::println);
+			buffPrims.getLines(pl.startNum, pl.endNum).forEach(System.out::println);
 		};
 
 		// q - quit the editor
@@ -111,7 +110,7 @@ public class LineEditor {
 		// r - read file into buffer
 		// Like e but reads into current buffer w/o setting filename
 		commands['r'] = pl -> {
-			buffHandler.readBuffer(isEmpty(pl.operands) ? currentFileName : pl.operands);
+			buffPrims.readBuffer(isEmpty(pl.operands) ? currentFileName : pl.operands);
 		};
 		
 		// s - substitute s/old/new/ - old may be regex, new is string
@@ -130,22 +129,22 @@ public class LineEditor {
 			boolean global = operands.length == 4 && operands[3].contains("g");
 			boolean print = operands.length == 4 && operands[3].contains("p");
 			if (range.length == 0) {			// current line only
-				buffHandler.replace(oldStr, newStr, global);
+				buffPrims.replace(oldStr, newStr, global);
 				if (print) {
-					System.out.println(buffHandler.getCurrentLine());
+					System.out.println(buffPrims.getCurrentLine());
 				}
 			} else {							// replace across range of lines
-				buffHandler.replace(oldStr, newStr, global, range[0], range[1]);
+				buffPrims.replace(oldStr, newStr, global, range[0], range[1]);
 				if (print) {
-					System.out.println(buffHandler.getCurrentLine());
+					System.out.println(buffPrims.getCurrentLine());
 				}
 			}
 		};
 
 		// u - undo last undoable
 		commands['u'] = pl -> {
-			if (buffHandler.isUndoSupported()) {
-				buffHandler.undo();
+			if (buffPrims.isUndoSupported()) {
+				buffPrims.undo();
 			} else {
 				System.out.println("?Undo not supported");
 			}
@@ -156,6 +155,19 @@ public class LineEditor {
 			System.err.println("?file is read-only");
 		};
 		
+	}
+
+	public static void readFile(String fileName) {
+		if (fileName == null) {
+			System.out.println("?no filename");
+		} else {
+			File f = new File(fileName);
+			if (f.canRead()) {
+				buffPrims.readBuffer(fileName);
+			} else {
+				System.out.println("File not readable");
+			}
+		}
 	}
 		
 	private static boolean isEmpty(String s) {
