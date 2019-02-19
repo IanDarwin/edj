@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 
-public class BufferPrimsWithUndo extends AbstractBufferPrims {
+public class BufferPrimsWithUndo extends AbstractBufferPrims implements UndoManager {
 
 	class UndoableCommand {
 		public UndoableCommand(String name, Runnable r) {
@@ -21,11 +21,14 @@ public class BufferPrimsWithUndo extends AbstractBufferPrims {
 	
 	Stack<UndoableCommand> undoables = new Stack<>();
 	
-	private void pushUndo(String name, Runnable r) {
+	public void pushUndo(String name, Runnable r) {
 		undoables.push(new UndoableCommand(name, r));
 	}
 
-	/** pop an undo - for authorized use only */
+	/* (non-Javadoc)
+	 * @see edj.UndoManager#popUndo()
+	 */
+	@Override
 	public void popUndo() {
 		if (!undoables.isEmpty()) {
 			undoables.pop();
@@ -36,6 +39,7 @@ public class BufferPrimsWithUndo extends AbstractBufferPrims {
 		// System.out.println("Undo TOS: " + (undoables.isEmpty() ? "(empty)" : undoables.peek().name));
 	}
 	
+	@Override
 	public void clearBuffer() {
 		current = NO_NUM;
 		buffer.clear();
@@ -77,6 +81,7 @@ public class BufferPrimsWithUndo extends AbstractBufferPrims {
 	
 	private int nl = 0, nch = 0; // Only accessed single-threadedly, only from readBuffer
 
+	@Override
 	public void readBuffer(String fileName) {
 		int startLine = current;
 		try (BufferedReader bufferedReader = new BufferedReader(new FileReader(fileName))) {
@@ -94,11 +99,22 @@ public class BufferPrimsWithUndo extends AbstractBufferPrims {
 		pushUndo("read", () -> deleteLines(startLine, startLine + nl));
 	}
 	
+	@Override
 	public void writeBuffer(String fileName) {
 		throw new UnsupportedOperationException();
 	}
 
-	/** If there are any undoable actions, pop the top one and run it. */
+	/* (non-Javadoc)
+	 * @see edj.UndoManager#isUndoSupported()
+	 */
+	@Override
+	public boolean isUndoSupported() {
+		return true;
+	}
+	/* (non-Javadoc)
+	 * @see edj.UndoManager#undo()
+	 */
+	@Override
 	public void undo() {
 		if (undoables.empty()) {
 			println("?Nothing to undo");
@@ -110,9 +126,6 @@ public class BufferPrimsWithUndo extends AbstractBufferPrims {
 		if (!undoables.empty()) {
 			undoables.pop();		// all actions create undos, drop them so undo works normally
 		}
-	}
-	public boolean isUndoSupported() {
-		return true;
 	}
 	
 	public void println(String s) {

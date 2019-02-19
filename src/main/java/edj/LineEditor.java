@@ -119,23 +119,27 @@ public class LineEditor {
 			int[] range = pl.lineRange();
 			// Figure out rest of line, should be something like /oldRE/newStr/[g]
 			// Any char not in the two strings can be used as delimiter
-			String[] operands = pl.operands.split(pl.operands.substring(0, 1));
-			// s=abc=def=g results [ "", "abc", "def", "g"]
-			if (operands.length == 1) {
-				System.out.println("? s/oldRe/newStr/[g]");
-			}
-			String oldStr = operands[1];
-			String newStr = operands.length > 2 ? operands[2] : "";
-			boolean global = operands.length == 4 && operands[3].contains("g");
-			boolean print = operands.length == 4 && operands[3].contains("p");
+			final String commandString = pl.operands;
+
+			String[] operands = commandString.split(commandString.substring(0, 1));
+			// These 'n' lines replace with call to parseSubstitute
+			// s=abc=def=g results [ "s", "abc", "def", "g"]
+			// if (operands.length == 1) {
+			//	System.out.println("? s/oldRe/newStr/[g]");
+			// }
+			// String oldStr = operands[1];
+			// String newStr = operands.length > 2 ? operands[2] : "";
+			// boolean global = operands.length == 4 && operands[3].contains("g");
+			// boolean print = operands.length == 4 && operands[3].contains("p");
+			ParsedSubstitute subs = LineParser.parseSubstitute(commandString);
 			if (range.length == 0) {			// current line only
-				buffPrims.replace(oldStr, newStr, global);
-				if (print) {
+				buffPrims.replace(subs.pattStr, subs.replacement, subs.global);
+				if (subs.print) {
 					System.out.println(buffPrims.getCurrentLine());
 				}
 			} else {							// replace across range of lines
-				buffPrims.replace(oldStr, newStr, global, range[0], range[1]);
-				if (print) {
+				buffPrims.replace(subs.pattStr, subs.replacement, subs.global, range[0], range[1]);
+				if (subs.print) {
 					System.out.println(buffPrims.getCurrentLine());
 				}
 			}
