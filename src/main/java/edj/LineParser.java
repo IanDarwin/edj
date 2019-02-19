@@ -1,10 +1,12 @@
 package edj;
 
+import java.util.regex.Pattern;
+
 public class LineParser {
 	
 	public static final int LNUM_NONE = -1;
 
-	static ParsedLine parse(String line, BufferPrims buffHandler) {
+	public static ParsedLine parse(String line, BufferPrims buffHandler) {
 		if (line == null || (line = line.trim()).length() == 0) {
 			return null;
 		}
@@ -91,5 +93,25 @@ public class LineParser {
 			cmd.endNum = LNUM_NONE;
 		}
 		return cmd;
+	}
+	
+	/**
+	 * Parse an ed/sed substitute command
+	 * @param commandString The command with the 's' already stripped off
+	 * @return a ParsedSubsitute
+	 */
+	public static ParsedSubstitute parseSubstitute(String commandString) {
+		String[] operands = commandString.split(commandString.substring(0, 1));
+		// s=abc=def=g results [ "", "abc", "def", "g"]
+		if (operands.length == 1) {
+			return null;
+		}
+		ParsedSubstitute subs = new ParsedSubstitute();
+		subs.pattStr = operands[1];
+		subs.patt = Pattern.compile(subs.pattStr);
+		subs.replacement = operands.length > 2 ? operands[2] : "";
+		subs.global = operands.length == 4 && operands[3].contains("g");
+		subs.print = operands.length == 4 && operands[3].contains("p");
+		return subs;
 	}
 }
