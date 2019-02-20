@@ -28,7 +28,7 @@ public class SubsParserTest {
 	private String replText;
 	private boolean expGlobal, expPrint;
 	
-	@Parameters
+	@Parameters(name="{0}")
 	public static List<Object[]> getParams() {
 		return Arrays.asList(params);
 	}
