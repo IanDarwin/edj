@@ -1,0 +1,14 @@
+echo Test - process stdin
+echo Hello old world | java -cp target/classes edj.StreamEditor -e s/old/new/
+echo Test - process file{1,2}
+echo Hello old world > file1; touch file2
+java -cp target/classes edj.StreamEditor -e s/old/new/ file1 file2
+rm -f file{1,2}
+echo Test - subst in file
+echo 'Hello World' > file1
+java -cp target/classes edj.StreamEditor -e s/orld/eird/ file1
+rm file1
+echo Test - s/old/new/g
+echo 'Hello Mellow Fellow' > file1
+java -cp target/classes edj.StreamEditor -e 's/ello/i/g' file1
+rm file1
