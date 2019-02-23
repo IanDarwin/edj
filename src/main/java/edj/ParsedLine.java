@@ -10,6 +10,8 @@ public class ParsedLine {
 	boolean startFound, commaFound, endFound;
 	int startNum, endNum;
 	String operands; // The rest of the line
+	Object opaque;	// For use of command
+
 	public String toString() {
 		return String.format("%d,%d%c%s", startNum, endNum, cmdLetter, 
 			operands == null ? "" :  (' ' + operands));
