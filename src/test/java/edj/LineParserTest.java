@@ -99,7 +99,7 @@ public class LineParserTest {
 
 	@Test
 	public void testPositive() {
-		final ParsedLine parsed = LineParser.parse(input, buffHandler);
+		final ParsedCommand parsed = LineParser.parse(input, buffHandler);
 		if (expected && parsed == null) {
 			fail("Did not parse " + input);
 		}

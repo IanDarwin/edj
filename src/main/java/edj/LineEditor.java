@@ -39,7 +39,7 @@ public class LineEditor {
 		// The main loop of the editor is right here:
 		while ((line = in.readLine())  != null) {
 
-			ParsedLine pl = LineParser.parse(line, buffPrims);
+			ParsedCommand pl = LineParser.parse(line, buffPrims);
 			if (pl == null) {
 				System.out.println("?");
 				continue;

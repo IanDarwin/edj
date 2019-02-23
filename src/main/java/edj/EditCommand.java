@@ -1,5 +1,5 @@
 package edj;
 
 public interface EditCommand {
-	void execute(ParsedLine pl);
+	void execute(ParsedCommand pl);
 }

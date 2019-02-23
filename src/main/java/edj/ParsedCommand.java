@@ -4,7 +4,7 @@ package edj;
  * Represents the command information from one command.
  * What is to be done, but not how.
  */
-public class ParsedLine {
+public class ParsedCommand {
 	// Could be an enum but we use it to index an array directly
 	char cmdLetter; // 'a' for append, 'd' for delete, &c.
 	boolean startFound, commaFound, endFound;

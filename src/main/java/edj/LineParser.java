@@ -6,12 +6,12 @@ public class LineParser {
 	
 	public static final int LNUM_NONE = -1;
 
-	public static ParsedLine parse(String line, BufferPrims buffHandler) {
+	public static ParsedCommand parse(String line, BufferPrims buffHandler) {
 		if (line == null || (line = line.trim()).length() == 0) {
 			return null;
 		}
 		char[] chars = line.toCharArray();
-		ParsedLine cmd = new ParsedLine();
+		ParsedCommand cmd = new ParsedCommand();
 		int i = 0;
 
 			if (chars[i] == '.') {
