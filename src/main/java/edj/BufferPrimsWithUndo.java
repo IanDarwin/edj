@@ -70,13 +70,15 @@ public class BufferPrimsWithUndo extends AbstractBufferPrims implements UndoMana
 			// System.out.println("BufferPrimsWithUndo.deleteLines(): inner:");
 			if (buffer.isEmpty()) {
 				System.out.println("?Deleted all lines!");
-				return;
+				break;
 			}
 			undoLines.add(buffer.remove(startIx)); // not i!
 		}
 		current = startLnum;
-		pushUndo("delete lines " + startLnum + " to " + end, 
+		if (!undoLines.isEmpty()) {
+			pushUndo("delete lines " + startLnum + " to " + end, 
 				() -> addLines(startLnum, undoLines));
+		}
 	}
 	
 	private int nl = 0, nch = 0; // Only accessed single-threadedly, only from readBuffer
