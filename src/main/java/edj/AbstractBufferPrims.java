@@ -61,7 +61,7 @@ public abstract class AbstractBufferPrims implements BufferPrims {
 		for (int i = startIx; i < end; i++) {
 			if (buffer.isEmpty()) {
 				System.out.println("?Deleted all lines!");
-				return;
+				break;
 			}
 			buffer.remove(startIx); // not i!
 		}
