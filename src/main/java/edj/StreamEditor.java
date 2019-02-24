@@ -8,6 +8,11 @@ import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * A trivial proof-of-concept for the editing code: show that we can easily
+ * implement Unix 'sed' command using the editing code.
+ * For now just implements sed's 's' command.
+ */
 public class StreamEditor {
 
 	static List<ParsedCommand> commands = new ArrayList<>();
