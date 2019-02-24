@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * LineEditor main program - implements a very small subset of the Unix line editor ed(1).
+ * LineEditor main program - implements a small subset of the Unix line editor ed(1).
  * It is NOT intended to be a real-world editor; the market for line editors is
  * rather limited, and is already served by ed. It is rather meant just as
  * a rather involved example of some design issues that arise in a text editor.
@@ -16,10 +16,12 @@ import java.util.List;
  * @author Ian Darwin
  */
 public class LineEditor {
-	
-	protected static AbstractBufferPrims buffPrims = new BufferPrimsWithUndo();
-	
+
+	protected static BufferPrims buffPrims = new BufferPrimsWithUndo();
+
 	protected static BufferedReader in = null;	// command input
+
+	protected static final boolean debug = false;
 
 	protected static String currentFileName;
 	
@@ -38,17 +40,23 @@ public class LineEditor {
 
 		// The main loop of the editor is right here:
 		while ((line = in.readLine())  != null) {
-
-			ParsedCommand pl = LineParser.parse(line, buffPrims);
-			if (pl == null) {
-				System.out.println("?");
-				continue;
-			}
-			EditCommand c = commands[pl.cmdLetter];
-			if (c == null) {
-				System.out.println("? Unknown command in " + line);
-			} else {
-				c.execute(pl);
+			try {
+				ParsedCommand pl = LineParser.parse(line, buffPrims);
+				if (pl == null) {
+					System.out.println("?");
+					continue;
+				}
+				EditCommand c = commands[pl.cmdLetter];
+				if (c == null) {
+					System.out.println("? Unknown command in " + line);
+				} else {
+					c.execute(pl);
+				}
+			} catch (Exception e) {
+				System.err.println("? Caught exception " + e);
+				if (debug) {
+					e.printStackTrace();
+				}
 			}
 		}
 	}
