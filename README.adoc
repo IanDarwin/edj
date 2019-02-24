@@ -1,7 +1,11 @@
-= edj
+= edj, sedj, gedj and vedj
 
 Edj (pronounced like the English word "edge") is the skeleton of 
 a simple line editor patterned after Unix ed(1).
+sedj is the stream editor - a tiny subset of Unix sed(1).
+gedj is the GUI version.
+vedj is - wait for it - the visual edj.
+The names all rhyme.
 
 It was not created to be a useful editor - _you cannot yet save your work!_ - but to
 provide a platform for some demonstrations of Design Patterns and related issues, particularly
@@ -24,7 +28,7 @@ This project has zero external run-time dependencies and only one test-time depe
 * Copy the JAR file from _target/_ to someplace like $HOME/lib/
 * Hack the _edj_ script to find the jar file there.
 
-Invoke with a filename argument.
+Invoke with a filename argument, or, start with an 'r' (read file) command.
 
 Commands are single lower-case letters (or '.' or '=')
 Command lines are of the form _start_,_end_++COMMAND++_operands_
