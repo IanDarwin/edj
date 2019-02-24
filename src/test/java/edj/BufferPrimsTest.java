@@ -5,7 +5,6 @@ import static org.junit.Assert.assertEquals;
 import java.util.Arrays;
 import java.util.List;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -14,10 +13,10 @@ import org.junit.runners.Parameterized.Parameters;
 @RunWith(Parameterized.class)
 public class BufferPrimsTest {
 
-	private Class<BufferPrims> clazz;
+	protected BufferPrims target;
 
-	public BufferPrimsTest(Class<BufferPrims> clazz) {
-		this.clazz = clazz;
+	public BufferPrimsTest(Class<BufferPrims> clazz) throws Exception {
+		target = clazz.newInstance();
 	}
 	
 	@Parameters(name = "{0}")
@@ -26,13 +25,6 @@ public class BufferPrimsTest {
 			BufferPrimsStringBuffer.class, 
 			BufferPrimsNoUndo.class, 
 			BufferPrimsWithUndo.class };
-	}
-	
-	protected BufferPrims target;
-	
-	@Before
-	public void setup() throws Exception {
-		target = clazz.newInstance();
 	}
 
 	protected final List<String> THREE_LINES = Arrays.asList("One Line", "Another Line", "Third Line");
