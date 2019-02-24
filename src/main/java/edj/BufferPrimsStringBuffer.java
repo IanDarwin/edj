@@ -164,6 +164,9 @@ public class BufferPrimsStringBuffer implements BufferPrims {
 		int startOffset = findLineOffset(current);
 		int length = findLineLengthAt(startOffset);
 		// TODO Auto-generated method stub
+		String tmp = buffer.substring(startOffset, length);
+		tmp = all ? tmp.replaceAll(old, newStr) : tmp.replace(old, newStr);
+		buffer.replace(startOffset, length, tmp);
 	}
 
 	@Override

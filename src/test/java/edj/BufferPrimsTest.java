@@ -101,4 +101,14 @@ public class BufferPrimsTest {
 		assertEquals("Another Line", ret.get(0));
 		assertEquals("Third Line", ret.get(1));
 	}
+
+	@Test
+	public void testReplaceOne() {
+		target.addLine("Fourscore and seven years ago, our fathers brought forth");
+		assertEquals(1, target.size());
+		target.replace("Fourscore and seven", "87", false);
+		target.replace("fathers",  "founders", false);
+		target.replace(" ", "_", true);
+		assertEquals("replace 1", target.getCurrentLine(), "87_years_ago,_our_founders_brought_forth");
+	}
 }
