@@ -33,6 +33,15 @@ public abstract class AbstractBufferPrims implements BufferPrims {
 	public void clearBuffer() {
 		// notused
 	}
+	
+	/* (non-Javadoc)
+	 * @see edj.BufferPrims#add(java.lang.String)
+	 */
+	@Override
+	public void addLine(String newLine) {
+		buffer.add(newLine);
+		current = buffer.size();
+	}
 
 	/* (non-Javadoc)
 	 * @see edj.BufferPrims#addLines(java.util.List)

@@ -30,6 +30,16 @@ public class BufferPrimsTest {
 	protected final List<String> THREE_LINES = Arrays.asList("One Line", "Another Line", "Third Line");
 
 	@Test
+	public void testAddOne() {
+		target.addLine("Hello world");
+		assertEquals(1, target.size());
+		if (!target.isUndoSupported()) {
+			return;
+		}
+		target.undo();
+		assertEquals(0, target.size());
+	}
+	@Test
 	public void testAdd() {
 		target.addLines(THREE_LINES);
 		assertEquals(3, target.size());

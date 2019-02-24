@@ -54,6 +54,11 @@ public class StreamEditor {
 		}
 		
 		@Override
+		public void addLine(String newLine) {
+			throw new UnsupportedOperationException();
+		}
+		
+		@Override
 		public void addLines(int start, List<String> newLines) {
 			throw new UnsupportedOperationException();
 		}

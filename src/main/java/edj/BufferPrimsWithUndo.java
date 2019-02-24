@@ -45,6 +45,12 @@ public class BufferPrimsWithUndo extends AbstractBufferPrims implements UndoMana
 		buffer.clear();
 		undoables.clear();		// can't undo after this!
 	}
+	
+	@Override
+	public void addLine(String newLine) {
+		super.addLine(newLine);
+		pushUndo("add 1 line", () -> deleteLines(current, current));
+	}
 
 	/* (non-Javadoc)
 	 * @see edj.BufferPrims#addLines(int, java.util.List)

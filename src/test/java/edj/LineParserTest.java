@@ -30,6 +30,11 @@ public class LineParserTest {
 		public int size() {
 			return 6;
 		}
+		
+		@Override
+		public void addLine(String newLine) {
+			// not used
+		}
 
 		@Override
 		public void addLines(int start, List<String> newLines) {

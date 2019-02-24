@@ -30,7 +30,8 @@ public class BufferPrimsStringBuffer implements BufferPrims {
 			buffer.append('\n');
 	}
 
-	protected void addLine(String s) {
+	@Override
+	public void addLine(String s) {
 		buffer.append(s).append('\n');
 	}
 
@@ -84,12 +85,12 @@ public class BufferPrimsStringBuffer implements BufferPrims {
 	}
 
 	@Override
-	public void deleteLines(int start, int end) {
-		if (start > end) {
+	public void deleteLines(int startLine, int endLine) {
+		if (startLine > endLine) {
 			throw new IllegalArgumentException();
 		}
-		int startOffset = findLineOffset(start),
-				endOffset = findLineOffset(end);
+		int startOffset = findLineOffset(startLine),
+				endOffset = findLineOffset(endLine);
 		buffer.delete(startOffset, endOffset + findLineLengthAt(endOffset) + 1);
 	}
 
@@ -101,7 +102,7 @@ public class BufferPrimsStringBuffer implements BufferPrims {
 
 	@Override
 	public void readBuffer(String fileName) {
-		// we must process line-at-a-time to ensure we have only \n at end of each line
+		// process line-at-a-time to ensure only \n at end of each line
 		try (BufferedReader rdr = new BufferedReader(new FileReader(fileName))) {
 			rdr.lines().forEach(this::addLine);
 		} catch (IOException ex) {
@@ -132,8 +133,9 @@ public class BufferPrimsStringBuffer implements BufferPrims {
 
 	@Override
 	public String getCurrentLine() {
-		// TODO
-		return null;
+		int startOffset = findLineOffset(current);
+		int len = findLineLengthAt(startOffset);
+		return buffer.substring(startOffset, startOffset + len);
 	}
 
 	@Override
@@ -159,11 +161,15 @@ public class BufferPrimsStringBuffer implements BufferPrims {
 
 	@Override
 	public void replace(String old, String newStr, boolean all) {
+		int startOffset = findLineOffset(current);
+		int length = findLineLengthAt(startOffset);
 		// TODO Auto-generated method stub
 	}
 
 	@Override
 	public void replace(String old, String newStr, boolean all, int startLine, int endLine) {
+		int startOffset = findLineOffset(startLine),
+				endOffset = findLineOffset(endLine);
 		// TODO Auto-generated method stub
 	}
 

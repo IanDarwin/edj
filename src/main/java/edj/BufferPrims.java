@@ -19,6 +19,8 @@ public interface BufferPrims {
 	final int NO_NUM = 0,
 		INF = Integer.MAX_VALUE;
 	
+	void addLine(String newLine);
+	
 	void addLines(List<String> newLines);
 
 	void addLines(int start, List<String> newLines);
