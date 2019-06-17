@@ -3,13 +3,17 @@ package edj;
 import java.awt.BorderLayout;
 import java.awt.Graphics;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.io.File;
+import java.util.List;
 
 import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
@@ -18,9 +22,9 @@ import javax.swing.JOptionPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
-/** This will someday evolve into 
+/** This will someday evolve into
  * A simple but usable editor based on a Swing UI and the
- * "edj" command set accessible from a command window at the 
+ * "edj" command set accessible from a command window at the
  * bottom of the main screen.
  * @author Ian Darwin
  */
@@ -29,15 +33,23 @@ public class SwingEditor extends JFrame {
 	private static final long serialVersionUID = 7029580204703610734L;
 
 	public static void main(String[] args) {
-		new SwingEditor().setVisible(true);
+		String fileName = (args.length == 1) ? args[0] : null;
+		new SwingEditor(fileName).setVisible(true);
 	}
 
 	protected BufferPrims buffer = new BufferPrimsWithUndo();
+	Commands commands = new Commands(buffer) {
+		@Override
+		protected List<String> gatherLines() {
+			final String input = JOptionPane.showInputDialog(this);
+			// XXX "read" or just split on \n
+			throw new UnsupportedOperationException("Unfinished");
+		}};
 	protected JTextArea textView;
 	protected JTextField commandField;
 	final int XPAD = 5, YPAD = 5;
 
-	SwingEditor() {
+	SwingEditor(String fileName) {
 
 		// Main window layout
 		textView = new MyTextArea(15, 80);
@@ -54,6 +66,10 @@ public class SwingEditor extends JFrame {
 
 		JMenu fileMenu = new JMenu("File");
 		mb.add(fileMenu);
+		final JMenuItem openMI = new JMenuItem("Open");
+		openMI.addActionListener(openFile);
+		fileMenu.add(openMI);
+		fileMenu.addSeparator();
 		JMenuItem quitMI = new JMenuItem("Exit");
 		quitMI.addActionListener(this::doQuit);
 		fileMenu.add(quitMI);
@@ -76,10 +92,14 @@ public class SwingEditor extends JFrame {
 		// Main window listener
 		addWindowListener(windowCloser);
 
-		// Temporary hack for early development
-		buffer.addLine("This is the start");
-		buffer.addLine("of a very very");
-		buffer.addLine("short story.");
+		if (fileName != null) {
+			commands.readFile(fileName);
+		} else {
+			// Temporary hack for early development
+			buffer.addLine("lorem ipsem dolor");
+			buffer.addLine("nunciat verbatim est");
+			buffer.addLine("cualquieres.");
+		}
 	}
 
 	class MyTextArea extends JTextArea {
@@ -98,21 +118,50 @@ public class SwingEditor extends JFrame {
 		public void paint(Graphics g) {
 			// BufferPrim line nums start at 1, not zero
 			int topLine = 1;
-			//int fh = getFontMetrics(getFont()).getHeight();
-			//int y = YPAD;
+			int fh = getFontMetrics(getFont()).getHeight();
+			int numLines = getHeight() / fh;
+			// int y = YPAD;
 			StringBuilder sb = new StringBuilder();
-			for (int i = topLine; i <= buffer.size() && i <= topLine + i; i++) {
+			for (int i = topLine; i <= buffer.size() && i <= topLine + numLines; i++) {
 				//g.drawString(buffer.get(i), XPAD, y += fh);
 				sb.append(buffer.getLine(i)).append("\n");
 			}
+			// return
 			setText(sb.toString());
 			super.paint(g);
 		}
 	}
 
 	protected void doCommand(ActionEvent e) {
-		System.out.println("Command: " + commandField.getText());
+		final String line = commandField.getText();
+		System.out.println("Command: " + line);
+		ParsedCommand pl = LineParser.parse(line, buffer);
+		EditCommand c = commands.commands[pl.cmdLetter];
+		if (c == null) {
+			System.out.println("? Unknown command in " + line);
+		} else {
+			c.execute(pl);
+		}
 	}
+
+	/**
+	 * Choose and open a file
+	 */
+	ActionListener openFile = e -> {
+		final JFileChooser chooser = new JFileChooser();
+		chooser.setCurrentDirectory(new File(System.getProperty("user.dir")));
+		int returnVal = chooser.showOpenDialog(this);
+		if (returnVal == JFileChooser.APPROVE_OPTION) {
+			File file = chooser.getSelectedFile();
+			if (file.isFile()) {
+				commands.readFile(file.getAbsolutePath());
+			} else {
+				JOptionPane.showMessageDialog(this, "Not a file: " + file);
+			}
+		}else {
+			JOptionPane.showMessageDialog(this, "You did not choose a file.");
+		}
+	};
 
 	/** Common code path for leaving the application */
 	@SuppressWarnings("")
