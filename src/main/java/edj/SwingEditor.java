@@ -4,12 +4,11 @@ import java.awt.BorderLayout;
 import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JCheckBoxMenuItem;
@@ -41,9 +40,12 @@ public class SwingEditor extends JFrame {
 	Commands commands = new Commands(buffer) {
 		@Override
 		protected List<String> gatherLines() {
-			final String input = JOptionPane.showInputDialog(this);
-			// XXX "read" or just split on \n
-			throw new UnsupportedOperationException("Unfinished");
+			final String input = JOptionPane.showInputDialog("New line(s):");
+			final List<String> list = new ArrayList<>();
+			for (String s : input.split("\n")) {
+				list.add(s);
+			}
+			return list;
 		}};
 	protected JTextArea textView;
 	protected JTextField commandField;
@@ -53,7 +55,8 @@ public class SwingEditor extends JFrame {
 
 		// Main window layout
 		textView = new MyTextArea(15, 80);
-		textView.addKeyListener(tvKeyListener);
+		// Will need textChangedListener and SelectionChangedListener
+		//textView.addKeyListener(tvKeyListener);
 		add(BorderLayout.CENTER, textView);
 		commandField = new JTextField();
 		commandField.addActionListener(e->doCommand(e));
@@ -137,6 +140,7 @@ public class SwingEditor extends JFrame {
 		System.out.println("Command: " + line);
 		ParsedCommand pl = LineParser.parse(line, buffer);
 		EditCommand c = commands.commands[pl.cmdLetter];
+		textView.repaint();
 		if (c == null) {
 			System.out.println("? Unknown command in " + line);
 		} else {
@@ -174,23 +178,5 @@ public class SwingEditor extends JFrame {
 		public void windowClosing(WindowEvent we) {
 			doQuit(null);
 		};
-	};
-
-	protected KeyListener tvKeyListener = new KeyListener() {
-
-		@Override
-		public void keyTyped(KeyEvent e) {
-			// TODO: Map e.getX() into buffer, mark that line as stale
-		}
-
-		@Override
-		public void keyPressed(KeyEvent e) {
-			// EMPTY
-		}
-
-		@Override
-		public void keyReleased(KeyEvent e) {
-			// EMPTY
-		}
 	};
 }
