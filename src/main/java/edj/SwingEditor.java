@@ -5,6 +5,9 @@ import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JFrame;
@@ -70,6 +73,9 @@ public class SwingEditor extends JFrame {
 		aboutMI.addActionListener(e->JOptionPane.showMessageDialog(this, "SwingEditor v0.0"));
 		helpMenu.add(aboutMI);
 
+		// Main window listener
+		addWindowListener(windowCloser);
+
 		// Temporary hack for early development
 		buffer.addLine("This is the start");
 		buffer.addLine("of a very very");
@@ -83,6 +89,11 @@ public class SwingEditor extends JFrame {
 			super(rows, columns);
 		}
 
+		/**
+		 * To get the text displayed, in paint() we grab the
+		 * given lines from the bufferprims before calling
+		 * super.paint(). Not salutory but works for v0.0.
+		 */
 		@Override
 		public void paint(Graphics g) {
 			// BufferPrim line nums start at 1, not zero
@@ -103,10 +114,18 @@ public class SwingEditor extends JFrame {
 		System.out.println("Command: " + commandField.getText());
 	}
 
+	/** Common code path for leaving the application */
+	@SuppressWarnings("")
 	protected void doQuit(ActionEvent e) {
 		// TODO check for unsaved changes
 		System.exit(0);
 	}
+
+	protected WindowListener windowCloser = new WindowAdapter() {
+		public void windowClosing(WindowEvent we) {
+			doQuit(null);
+		};
+	};
 
 	protected KeyListener tvKeyListener = new KeyListener() {
 
