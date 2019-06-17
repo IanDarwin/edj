@@ -9,9 +9,9 @@
 	<packaging>jar</packaging>
 	<inceptionYear>1982</inceptionYear>
 
-	<name>patterns-demos</name>
+	<name>edj - java editor family</name>
 	<url>https://darwinsys.com/java</url>
-	<description>Tiny subset of Unix ed(1) in Java as a Demo</description>
+	<description>Tiny subset of Unix ed(1)/sed/visual in Java as a Demo</description>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
