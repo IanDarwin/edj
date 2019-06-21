@@ -11,6 +11,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.BorderFactory;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -60,6 +61,7 @@ public class SwingEditor extends JFrame {
 		add(BorderLayout.CENTER, textView);
 		commandField = new JTextField();
 		commandField.addActionListener(e->doCommand(e));
+		commandField.setBorder(BorderFactory.createTitledBorder("Command"));
 		add(BorderLayout.SOUTH, commandField);
 		pack();
 
@@ -135,16 +137,22 @@ public class SwingEditor extends JFrame {
 		}
 	}
 
+	/** Execute one command-line editor command */
 	protected void doCommand(ActionEvent e) {
-		final String line = commandField.getText();
+		// Old-time vi/vim users may type a : at start of command, strip it.
+		String line = commandField.getText();
+		if (line.charAt(0) == ':') {
+			line = line.substring(1);
+		}
+		
 		System.out.println("Command: " + line);
 		ParsedCommand pl = LineParser.parse(line, buffer);
 		EditCommand c = commands.commands[pl.cmdLetter];
-		textView.repaint();
 		if (c == null) {
 			System.out.println("? Unknown command in " + line);
 		} else {
 			c.execute(pl);
+			textView.repaint();
 		}
 	}
 
