@@ -55,7 +55,7 @@ public class SwingEditor extends JFrame {
 	SwingEditor(String fileName) {
 
 		// Main window layout
-		textView = new MyTextArea(15, 80);
+		textView = new MyTextArea(20, 80);
 		// Will need textChangedListener and SelectionChangedListener
 		//textView.addKeyListener(tvKeyListener);
 		add(BorderLayout.CENTER, textView);
@@ -101,6 +101,7 @@ public class SwingEditor extends JFrame {
 			commands.readFile(fileName);
 		} else {
 			// Temporary hack for early development
+			buffer.addLine("This is some dummy text to start you off.");
 			buffer.addLine("lorem ipsem dolor");
 			buffer.addLine("nunciat verbatim est");
 			buffer.addLine("cualquieres.");
@@ -152,6 +153,8 @@ public class SwingEditor extends JFrame {
 			System.out.println("? Unknown command in " + line);
 		} else {
 			c.execute(pl);
+			commandField.setText("");
+			// Should add this to a finite stack for recall.
 			textView.repaint();
 		}
 	}
