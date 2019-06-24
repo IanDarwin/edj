@@ -15,8 +15,11 @@ public abstract class AbstractBufferPrims implements BufferPrims {
 	/** 
 	 * The line number is a human-centric line number, e.g., 
 	 * starts at 1 when referring to actual lines,
-	 * is zero only when buffer is empty
-	 * */
+	 * is zero only when buffer is empty.
+	 * Use lineNumToIndex when referring to the buffer with
+	 * a human-readable line number, e.g.,
+	 * buffer.set(lineNumToIndex(lineNum), newText);
+	 */
 	protected int current = NO_NUM;
 	
 	/* (non-Javadoc)
@@ -113,11 +116,12 @@ public abstract class AbstractBufferPrims implements BufferPrims {
 		return ret;
 	}
 	
+	/** Replace old with new in the current line */
 	@Override
 	public void replace(String oldRE, String newStr, boolean all) {
 		int ix = lineNumToIndex(current);
 		String target = buffer.get(ix);
-		buffer.set(lineNumToIndex(ix), all?
+		buffer.set(ix, all?
 			target.replaceAll(oldRE, newStr) :
 			target.replaceFirst(oldRE, newStr));
 	}
