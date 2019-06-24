@@ -1,0 +1,12 @@
+#!/bin/sh
+
+# script to run edj editor
+
+# Keep in synch with pom file!
+V=1.0-SNAPSHOT
+
+# Use one or another of these as -cp argument
+DIR=target/classes
+JAR=$HOME/.m2/repository/com/darwinsys/edj/${V}/edj-${V}.jar
+
+java -cp ${DIR} edj.SwingEditor $*
