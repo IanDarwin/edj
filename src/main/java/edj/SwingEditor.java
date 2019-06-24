@@ -50,6 +50,7 @@ public class SwingEditor extends JFrame {
 		}};
 	protected JTextArea textView;
 	protected JTextField commandField;
+	protected JCheckBoxMenuItem lineNumsCB;
 	final int XPAD = 5, YPAD = 5;
 
 	SwingEditor(String fileName) {
@@ -74,6 +75,15 @@ public class SwingEditor extends JFrame {
 		final JMenuItem openMI = new JMenuItem("Open");
 		openMI.addActionListener(openFile);
 		fileMenu.add(openMI);
+		final JMenuItem saveMI = new JMenuItem("Save");
+		saveMI.setEnabled(false);
+		fileMenu.add(saveMI);
+		final JMenuItem saveAsMI = new JMenuItem("SaveAs");
+		saveAsMI.setEnabled(false);
+		fileMenu.add(saveAsMI);
+		final JMenuItem closeAsMI = new JMenuItem("Close");
+		closeAsMI.setEnabled(false);
+		fileMenu.add(closeAsMI);
 		fileMenu.addSeparator();
 		JMenuItem quitMI = new JMenuItem("Exit");
 		quitMI.addActionListener(this::doQuit);
@@ -85,7 +95,7 @@ public class SwingEditor extends JFrame {
 
 		JMenu viewMenu = new JMenu("View");
 		mb.add(viewMenu);
-		JCheckBoxMenuItem lineNumsCB = new JCheckBoxMenuItem("Show line numbers");
+		lineNumsCB = new JCheckBoxMenuItem("Show line numbers");
 		viewMenu.add(lineNumsCB);
 
 		JMenu helpMenu = new JMenu("Help");
@@ -130,6 +140,8 @@ public class SwingEditor extends JFrame {
 			StringBuilder sb = new StringBuilder();
 			for (int i = topLine; i <= buffer.size() && i <= topLine + numLines; i++) {
 				//g.drawString(buffer.get(i), XPAD, y += fh);
+				if (lineNumsCB.isSelected())
+					sb.append(i).append(' ');
 				sb.append(buffer.getLine(i)).append("\n");
 			}
 			// return
@@ -146,15 +158,18 @@ public class SwingEditor extends JFrame {
 			line = line.substring(1);
 		}
 		
-		System.out.println("Command: " + line);
 		ParsedCommand pl = LineParser.parse(line, buffer);
+		if (pl == null) {
+			JOptionPane.showMessageDialog(this, "Could not parse command");
+			return;
+		}
+		// System.out.printf("Line: %s, Parsed to %s\n", line, pl);
 		EditCommand c = commands.commands[pl.cmdLetter];
 		if (c == null) {
 			System.out.println("? Unknown command in " + line);
 		} else {
 			c.execute(pl);
 			commandField.setText("");
-			// Should add this to a finite stack for recall.
 			textView.repaint();
 		}
 	}
@@ -179,7 +194,6 @@ public class SwingEditor extends JFrame {
 	};
 
 	/** Common code path for leaving the application */
-	@SuppressWarnings("")
 	protected void doQuit(ActionEvent e) {
 		// TODO check for unsaved changes
 		System.exit(0);
