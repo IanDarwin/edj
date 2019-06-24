@@ -46,7 +46,8 @@ public abstract class Commands {
 		// a - append lines
 		commands['a'] = pl -> {
 			List<String> lines = gatherLines();
-			buffPrims.addLines(lines);
+			int where = pl.startNum == -1 ? buffPrims.getCurrentLineNumber() : pl.startNum;
+			buffPrims.addLines(where, lines);
 		};
 
 		// d - delete lines
