@@ -75,7 +75,7 @@ public class BufferPrimsWithUndo extends AbstractBufferPrims implements UndoMana
 		for (int i = startIx; i < end; i++) {
 			// System.out.println("BufferPrimsWithUndo.deleteLines(): inner:");
 			if (buffer.isEmpty()) {
-				System.out.println("?Deleted all lines!");
+				println("?Deleted all lines!");
 				break;
 			}
 			undoLines.add(buffer.remove(startIx)); // not i!
@@ -87,6 +87,32 @@ public class BufferPrimsWithUndo extends AbstractBufferPrims implements UndoMana
 		}
 	}
 	
+	@Override
+	public void replace(String oldRE, String newStr, boolean all) {
+		final String oldLine = getCurrentLine();
+		super.replace(oldRE, newStr, all);
+		pushUndo("Replace in line" + getCurrentLineNumber(),
+				() -> buffer.set(lineNumToIndex(getCurrentLineNumber()), oldLine));
+	}
+
+	@Override
+	public void replace(String oldRE, String newStr, boolean all, int startLine, int endLine) {
+		final List<String> oldLines = new ArrayList<>();
+		for (int i = startLine; i <= endLine; i++) {
+			oldLines.add(getLine(i));
+		}
+		super.replace(oldRE, newStr, all, startLine, endLine);
+		pushUndo(
+			String.format("replace %s with %s in lines %d to %d",
+					oldRE, newStr, startLine, endLine),
+				() -> {
+					for (int i = 0; i < oldLines.size(); i++) {
+						buffer.set(lineNumToIndex(i + startLine), oldLines.get(i));
+				}
+			}
+		);
+	}
+
 	private int nl = 0, nch = 0; // Only accessed single-threadedly, only from readBuffer
 
 	@Override
@@ -119,6 +145,7 @@ public class BufferPrimsWithUndo extends AbstractBufferPrims implements UndoMana
 	public boolean isUndoSupported() {
 		return true;
 	}
+
 	/* (non-Javadoc)
 	 * @see edj.UndoManager#undo()
 	 */
