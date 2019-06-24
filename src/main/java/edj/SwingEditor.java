@@ -91,7 +91,15 @@ public class SwingEditor extends JFrame {
 
 		JMenu editMenu = new JMenu("Edit");
 		mb.add(editMenu);
-		editMenu.add(new JMenuItem("Not written yet"));
+		final JMenuItem cutMI = new JMenuItem("Cut");
+		cutMI.setEnabled(false);
+		editMenu.add(cutMI);
+		final JMenuItem copyMI = new JMenuItem("Copy");
+		copyMI.setEnabled(false);
+		editMenu.add(copyMI);
+		final JMenuItem pasteMI = new JMenuItem("Paste");
+		pasteMI.setEnabled(false);
+		editMenu.add(pasteMI);
 
 		JMenu viewMenu = new JMenu("View");
 		mb.add(viewMenu);
