@@ -58,7 +58,7 @@ public class BufferPrimsWithUndo extends AbstractBufferPrims implements UndoMana
 	@Override
 	public void addLines(int startLnum, List<String> newLines) {
 		// System.out.printf("BufferPrimsWithUndo.addLines(): start %d, size %d%n", startLnum, newLines.size());
-		int startIx = lineNumToIndex(startLnum) + 1; // append after
+		int startIx = startLnum == 0 ? 0 : lineNumToIndex(startLnum) + 1; // append after
 		buffer.addAll(startIx, newLines);
 		current += newLines.size();
 		pushUndo("add " + newLines.size() + " lines", () -> deleteLines(startLnum, startLnum + newLines.size()));

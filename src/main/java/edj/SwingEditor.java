@@ -1,7 +1,6 @@
 package edj;
 
 import java.awt.BorderLayout;
-import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
@@ -21,6 +20,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.text.JTextComponent;
 
 /** This will someday evolve into
  * A simple but usable editor based on a Swing UI and the
@@ -56,7 +56,7 @@ public class SwingEditor extends JFrame {
 	SwingEditor(String fileName) {
 
 		// Main window layout
-		textView = new MyTextArea(20, 80);
+		textView = new JTextArea(20, 80);
 		// Will need textChangedListener and SelectionChangedListener
 		//textView.addKeyListener(tvKeyListener);
 		add(BorderLayout.CENTER, textView);
@@ -124,41 +124,10 @@ public class SwingEditor extends JFrame {
 			buffer.addLine("nunciat verbatim est");
 			buffer.addLine("cualquieres.");
 		}
+		refresh();
 	}
 
-	class MyTextArea extends JTextArea {
-		private static final long serialVersionUID = 1L;
-
-		MyTextArea(int rows, int columns) {
-			super(rows, columns);
-		}
-
-		/**
-		 * To get the text displayed, in paint() we grab the
-		 * given lines from the bufferprims before calling
-		 * super.paint(). Not salutory but works for v0.0.
-		 */
-		@Override
-		public void paint(Graphics g) {
-			// BufferPrim line nums start at 1, not zero
-			int topLine = 1;
-			int fh = getFontMetrics(getFont()).getHeight();
-			int numLines = getHeight() / fh;
-			// int y = YPAD;
-			StringBuilder sb = new StringBuilder();
-			for (int i = topLine; i <= buffer.size() && i <= topLine + numLines; i++) {
-				//g.drawString(buffer.get(i), XPAD, y += fh);
-				if (lineNumsCB.isSelected())
-					sb.append(i).append(' ');
-				sb.append(buffer.getLine(i)).append("\n");
-			}
-			// return
-			setText(sb.toString());
-			super.paint(g);
-		}
-	}
-
-	/** Execute one command-line editor command */
+		/** Execute one command-line editor command */
 	protected void doCommand(ActionEvent e) {
 		// Old-time vi/vim users may type a : at start of command, strip it.
 		String line = commandField.getText();
@@ -177,9 +146,28 @@ public class SwingEditor extends JFrame {
 			System.out.println("? Unknown command in " + line);
 		} else {
 			c.execute(pl);
-			commandField.setText("");
-			textView.repaint();
+			((JTextComponent)e.getSource()).setText("");
+			refresh();
 		}
+	}
+
+	protected void refresh() {
+		commandField.setText("");
+		// BufferPrim line nums start at 1, not zero
+		int topLine = 1;
+		int fh = getFontMetrics(getFont()).getHeight();
+		int numLines = getHeight() / fh;
+		// int y = YPAD;
+		StringBuilder sb = new StringBuilder();
+		for (int i = topLine; i <= buffer.size() && i <= topLine + numLines; i++) {
+			//g.drawString(buffer.get(i), XPAD, y += fh);
+			if (lineNumsCB.isSelected())
+				sb.append(i).append(' ');
+			sb.append(buffer.getLine(i)).append("\n");
+		}
+		// return
+		textView.setText(sb.toString());
+		textView.repaint();
 	}
 
 	/**
@@ -193,6 +181,7 @@ public class SwingEditor extends JFrame {
 			File file = chooser.getSelectedFile();
 			if (file.isFile()) {
 				commands.readFile(file.getAbsolutePath());
+				refresh();
 			} else {
 				JOptionPane.showMessageDialog(this, "Not a file: " + file);
 			}

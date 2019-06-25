@@ -18,6 +18,7 @@ public class BufferPrimsNoUndo extends AbstractBufferPrims {
 	}
 	
 	public void clearBuffer() {
+		buffer.clear();
 		current = NO_NUM;
 	}
 	
@@ -25,6 +26,7 @@ public class BufferPrimsNoUndo extends AbstractBufferPrims {
 
 	public void readBuffer(String fileName) {
 		try (BufferedReader bufferedReader = new BufferedReader(new FileReader(fileName))) {
+			clearBuffer();
 			bufferedReader.lines().forEach((s) -> {
 				nl++; nch += s.length();
 				buffer.add(s);
