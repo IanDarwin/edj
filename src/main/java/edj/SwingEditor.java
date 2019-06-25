@@ -1,8 +1,10 @@
 package edj;
 
 import java.awt.BorderLayout;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
@@ -11,16 +13,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.BorderFactory;
+import javax.swing.JButton;
 import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JTextArea;
-import javax.swing.JTextField;
-import javax.swing.text.JTextComponent;
+import javax.swing.KeyStroke;
+import javax.swing.border.TitledBorder;
 
 /** This will someday evolve into
  * A simple but usable editor based on a Swing UI and the
@@ -43,14 +48,16 @@ public class SwingEditor extends JFrame {
 		protected List<String> gatherLines() {
 			final String input = JOptionPane.showInputDialog("New line(s):");
 			final List<String> list = new ArrayList<>();
-			for (String s : input.split("\n")) {
-				list.add(s);
-			}
+			if (input != null && input.length() > 0)
+				for (String s : input.split("\n")) {
+					list.add(s);
+				}
 			return list;
 		}};
 	protected JTextArea textView;
-	protected JTextField commandField;
 	protected JCheckBoxMenuItem lineNumsCB;
+	protected TitledBorder listBorder;
+	protected JComboBox<String> history;
 	final int XPAD = 5, YPAD = 5;
 
 	SwingEditor(String fileName) {
@@ -59,12 +66,21 @@ public class SwingEditor extends JFrame {
 		textView = new JTextArea(20, 80);
 		// Will need textChangedListener and SelectionChangedListener
 		//textView.addKeyListener(tvKeyListener);
+		listBorder = BorderFactory.createTitledBorder("Editing");
+		textView.setBorder(listBorder);
 		add(BorderLayout.CENTER, textView);
-		commandField = new JTextField();
-		commandField.addActionListener(e->doCommand(e));
-		commandField.setBorder(BorderFactory.createTitledBorder("Command"));
-		add(BorderLayout.SOUTH, commandField);
-		pack();
+		
+		JPanel bottomPanel = new JPanel();
+		bottomPanel.setBorder(BorderFactory.createTitledBorder("Command"));
+		history = new JComboBox<String>(new String[] {"# Commands Here"});
+		history.removeAllItems();
+		history.setEditable(true);
+		bottomPanel.add(history);
+		JButton goButton = new JButton("Go");
+		history.addActionListener(e -> goButton.requestFocus());
+		goButton.addActionListener(e -> doCommand(e));
+		bottomPanel.add(goButton);
+		add(BorderLayout.SOUTH, bottomPanel);
 
 		// File/Edit/View menu
 		JMenuBar mb = new JMenuBar();
@@ -72,32 +88,41 @@ public class SwingEditor extends JFrame {
 
 		JMenu fileMenu = new JMenu("File");
 		mb.add(fileMenu);
-		final JMenuItem openMI = new JMenuItem("Open");
+		final JMenuItem openMI = new JMenuItem("Open", 'O');
+		final int mask = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
+		openMI.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, mask));
 		openMI.addActionListener(openFile);
 		fileMenu.add(openMI);
 		final JMenuItem saveMI = new JMenuItem("Save");
+		saveMI.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, mask));
 		saveMI.setEnabled(false);
 		fileMenu.add(saveMI);
 		final JMenuItem saveAsMI = new JMenuItem("SaveAs");
 		saveAsMI.setEnabled(false);
 		fileMenu.add(saveAsMI);
-		final JMenuItem closeAsMI = new JMenuItem("Close");
-		closeAsMI.setEnabled(false);
-		fileMenu.add(closeAsMI);
+		final JMenuItem closeMI = new JMenuItem("Close");
+		closeMI.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_W, mask));
+		closeMI.setEnabled(false);
+		fileMenu.add(closeMI);
 		fileMenu.addSeparator();
 		JMenuItem quitMI = new JMenuItem("Exit");
+		quitMI.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q, mask));
 		quitMI.addActionListener(this::doQuit);
 		fileMenu.add(quitMI);
 
 		JMenu editMenu = new JMenu("Edit");
 		mb.add(editMenu);
 		final JMenuItem cutMI = new JMenuItem("Cut");
-		cutMI.setEnabled(false);
+		cutMI.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X, mask));
+		cutMI.addActionListener(e -> doCut());
+		//cutMI.setEnabled(false);
 		editMenu.add(cutMI);
 		final JMenuItem copyMI = new JMenuItem("Copy");
+		copyMI.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, mask));
 		copyMI.setEnabled(false);
 		editMenu.add(copyMI);
 		final JMenuItem pasteMI = new JMenuItem("Paste");
+		pasteMI.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_V, mask));
 		pasteMI.setEnabled(false);
 		editMenu.add(pasteMI);
 
@@ -114,6 +139,8 @@ public class SwingEditor extends JFrame {
 
 		// Main window listener
 		addWindowListener(windowCloser);
+		
+		pack();
 
 		if (fileName != null) {
 			commands.readFile(fileName);
@@ -126,14 +153,25 @@ public class SwingEditor extends JFrame {
 		}
 		refresh();
 	}
+	
+	protected void doCut() {
+		System.out.println("Cut invoked");
+	}
 
-		/** Execute one command-line editor command */
+	/** Execute one command-line editor command, from 
+	 * commandText or from history
+	 */
 	protected void doCommand(ActionEvent e) {
+		String line = (String) history.getSelectedItem();		
+		System.out.println("line = " + line);
+		if (line.length() == 0)
+			return;
 		// Old-time vi/vim users may type a : at start of command, strip it.
-		String line = commandField.getText();
 		if (line.charAt(0) == ':') {
 			line = line.substring(1);
 		}
+		
+		history.addItem(line);
 		
 		ParsedCommand pl = LineParser.parse(line, buffer);
 		if (pl == null) {
@@ -146,13 +184,12 @@ public class SwingEditor extends JFrame {
 			System.out.println("? Unknown command in " + line);
 		} else {
 			c.execute(pl);
-			((JTextComponent)e.getSource()).setText("");
 			refresh();
 		}
 	}
 
 	protected void refresh() {
-		commandField.setText("");
+		// commandField.setText("");
 		// BufferPrim line nums start at 1, not zero
 		int topLine = 1;
 		int fh = getFontMetrics(getFont()).getHeight();
@@ -181,6 +218,7 @@ public class SwingEditor extends JFrame {
 			File file = chooser.getSelectedFile();
 			if (file.isFile()) {
 				commands.readFile(file.getAbsolutePath());
+				listBorder.setTitle(file.getName());
 				refresh();
 			} else {
 				JOptionPane.showMessageDialog(this, "Not a file: " + file);
