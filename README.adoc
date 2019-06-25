@@ -17,6 +17,9 @@ It was also written to show that you can, in fact, do something small and
 (possibly) useful in Java without dragging in 47 different add-on JAR files.
 This project has zero external run-time dependencies and only one test-time dependency (JUnit).
 
+Note that the BufferPrims code has changed slightly from the version shown in
+the July/August issue of Java Magazine, due to the need to support a screen editor as well.
+
 == Usage
 
 * Compile and package:
@@ -34,11 +37,11 @@ Commands are single lower-case letters (or '.' or '=')
 Command lines are of the form _start_,_end_++COMMAND++_operands_
 
 The line range _start_,_end_ is optional; if omitted altogether the
-current line (most recendly added or modified) is meant.
+current line (most recently added or modified) is meant.
 If only one line is intended, omit the comma and the second number.
 A command line that consists only of a line number will move the current line to that number.
 
-The special line number '$' (dollar sign) meaning 'last line' is not yet implemented.
+The original _ed_'s special line number '$' (dollar sign) meaning 'last line' is not yet implemented.
 Line numbers beginning with '+' or '-' are not implemented.
 The special filename syntax beginning with '!' ('bang' or exclamation mark) will not be implemented.
 
