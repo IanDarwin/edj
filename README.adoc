@@ -1,9 +1,8 @@
-= edj, sedj, gedj and vedj
+= edj, sedj, and vedj
 
 Edj (pronounced like the English word "edge") is the skeleton of 
 a simple line editor patterned after Unix ed(1).
 sedj is the stream editor - a tiny subset of Unix sed(1).
-gedj is the GUI version.
 vedj is - wait for it - the visual edj.
 The names all rhyme.
 
@@ -26,7 +25,7 @@ the July/August issue of Java Magazine, due to the need to support a screen edit
 ----
 	mvn package
 ----
-* Copy the _edj_ script to a directory on your path 
+* Copy the _edj_ and _vedj_ scripts to a directory on your path 
 (for MS-DOS-derived systems, somebody needs to write an _edj.bat_, do do the same thing).
 * Copy the JAR file from _target/_ to someplace like $HOME/lib/
 * Hack the _edj_ script to find the jar file there.
