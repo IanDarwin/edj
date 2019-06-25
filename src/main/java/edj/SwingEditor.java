@@ -125,6 +125,11 @@ public class SwingEditor extends JFrame {
 		pasteMI.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_V, mask));
 		pasteMI.setEnabled(false);
 		editMenu.add(pasteMI);
+		editMenu.addSeparator();
+		final JMenuItem undoMI = new JMenuItem("Undo");
+		undoMI.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Z, mask));
+		undoMI.addActionListener(e -> buffer.undo());
+		editMenu.add(undoMI);
 
 		JMenu viewMenu = new JMenu("View");
 		mb.add(viewMenu);
