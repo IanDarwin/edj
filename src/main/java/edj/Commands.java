@@ -1,20 +1,17 @@
 package edj;
 
 import java.io.File;
-import java.util.List;
 
-public abstract class Commands {
+public class Commands {
 	static EditCommand commands[] = new EditCommand[255];
 	static BufferPrims buffPrims = null;
 	protected static String currentFileName;
-	
-	protected abstract List<String> gatherLines();
 	
 	Commands(BufferPrims buffPrims) {
 		this.buffPrims = buffPrims;
 		fillCommands();
 	}
-	
+
 	public void readFile(String fileName) {
 		if (fileName == null) {
 			System.out.println("?no filename");
@@ -27,7 +24,6 @@ public abstract class Commands {
 			}
 		}
 	}
-
 	
 	private void fillCommands() {
 		// Keep in alphabetical order
@@ -45,9 +41,7 @@ public abstract class Commands {
 
 		// a - append lines
 		commands['a'] = pl -> {
-			List<String> lines = gatherLines();
-			int where = pl.startNum == -1 ? buffPrims.getCurrentLineNumber() : pl.startNum;
-			buffPrims.addLines(where, lines);
+			throw new UnsupportedOperationException("Editor must provide 'a' implementation");
 		};
 
 		// d - delete lines
@@ -134,7 +128,17 @@ public abstract class Commands {
 			System.err.println("?file is read-only");
 		};
 	}
-	
+
+	/**
+	 * Allow the main editor to add/replace a command.
+	 * Use with extreme caution!
+	 * @param ch The letter for the character
+	 * @param r The Edit Command to use for that character
+	 */
+	public void setCommand(char ch, EditCommand r) {
+		commands[ch] = r;
+	}
+
 	private static boolean isEmpty(String s) {
 		return s == null || s.trim().length() == 0;
 	}

@@ -53,8 +53,8 @@ public class LineEditor {
 		if (args.length == 1) {
 			commands.readFile(currentFileName = args[0]);
 			// Since readBuffer can be used from here or interactively, here we drop its Undoable.
-			if (buffPrims instanceof UndoManager) {
-				((UndoManager)buffPrims).popUndo();
+			if (buffPrims instanceof UndoManagerEdj) {
+				((UndoManagerEdj)buffPrims).popUndo();
 			}
 		}
 

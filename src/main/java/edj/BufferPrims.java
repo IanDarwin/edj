@@ -6,7 +6,7 @@ import java.util.List;
  * Buffer Primitives for Line Editor edj.
  * 
  * This interface provides separation between the command level and the buffer management.
- * The internal organization of the buffer is not the concernt of this interface,
+ * The internal organization of the buffer is not the concern of this interface,
  * other than to the extent that it is a line-oriented interface.
  * 
  * N.B. ALL Line numbers at this interface's level are 1-based, because 1 is the first line.
@@ -49,11 +49,28 @@ public interface BufferPrims {
 	/** replace first/all occur in each line */
 	void replace(String oldRE, String newStr, boolean all, int startLine, int endLine); 
 
-	boolean isUndoSupported();
-	
-	/** Undo the most recent operation: optional method */
+	/** 
+	 * Return true if undo is supported.
+	 * @return true if undo is supported.
+	 */
+	default boolean isUndoSupported() {
+		return false;
+	}
+
 	default void undo() {
 		throw new UnsupportedOperationException();
+	}
+
+	// Utility methods, only for implementations that use a 0-based
+	// internal representation (interface values are 1-based).
+	default int lineNumToIndex(int ln) {
+		if (ln == 0) {
+			ln = 1;
+		}
+		return ln - 1;
+	}
+	default int indexToLineNum(int ix) {
+		return ix + 1;
 	}
 
 }

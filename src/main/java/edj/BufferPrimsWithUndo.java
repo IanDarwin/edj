@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 
-public class BufferPrimsWithUndo extends AbstractBufferPrims implements UndoManager {
+public class BufferPrimsWithUndo extends AbstractBufferPrims implements UndoManagerEdj {
 
 	class UndoableCommand {
 		public UndoableCommand(String name, Runnable r) {
@@ -21,6 +21,7 @@ public class BufferPrimsWithUndo extends AbstractBufferPrims implements UndoMana
 	
 	Stack<UndoableCommand> undoables = new Stack<>();
 	
+	@Override
 	public void pushUndo(String name, Runnable r) {
 		undoables.push(new UndoableCommand(name, r));
 	}

@@ -81,16 +81,6 @@ public abstract class AbstractBufferPrims implements BufferPrims {
 		return current;
 	}
 
-	protected int lineNumToIndex(int ln) {
-		if (ln == 0) {
-			ln = 1;
-		}
-		return ln - 1;
-	}
-	protected int indexToLineNum(int ix) {
-		return ix + 1;
-	}
-
 	public int goToLine(int ln) {
 		if (current == NO_NUM) {
 			return NO_NUM;

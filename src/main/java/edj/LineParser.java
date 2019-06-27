@@ -75,7 +75,7 @@ public class LineParser {
 			}
 
 			final char cmdChar = chars[i++];
-			if (cmdChar >= 'a' && cmdChar <= 'z')
+			if (Character.isAlphabetic(cmdChar)) // Upper or lower case
 				cmd.cmdLetter = cmdChar;
 			else {
 				System.out.printf("LineParser.parse(): failed to parse input %s (i=%d)\n", line, i);

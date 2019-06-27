@@ -5,6 +5,8 @@ import static org.junit.Assert.assertEquals;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.swing.JTextArea;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -15,7 +17,11 @@ public class BufferPrimsTest {
 
 	protected BufferPrims target;
 
-	public BufferPrimsTest(Class<BufferPrims> clazz) throws Exception {
+	public BufferPrimsTest(Class<? extends BufferPrims> clazz) throws Exception {
+		if (clazz == BufferPrimsJText.class) {
+			target = new BufferPrimsJText(new JTextArea(24, 80));
+			return;
+		}
 		target = clazz.newInstance();
 	}
 	
@@ -24,7 +30,9 @@ public class BufferPrimsTest {
 		return (Class<BufferPrims>[]) new Class<?>[] { 
 			BufferPrimsStringBuffer.class, 
 			BufferPrimsNoUndo.class, 
-			BufferPrimsWithUndo.class };
+			BufferPrimsWithUndo.class,
+			BufferPrimsJText.class,
+			};
 	}
 
 	protected final List<String> THREE_LINES = Arrays.asList("One Line", "Another Line", "Third Line");
@@ -104,11 +112,23 @@ public class BufferPrimsTest {
 
 	@Test
 	public void testReplaceOne() {
-		target.addLine("Fourscore and seven years ago, our fathers brought forth");
+		final String gettysburg = "Fourscore and seven years ago, our fathers brought forth";
+		System.out.println(gettysburg.length());
+		target.addLine(gettysburg);
 		assertEquals(1, target.size());
 		target.replace("Fourscore and seven", "87", false);
+		assertEquals("replace 1", gettysburg.replace("Fourscore and seven", "87"), target.getCurrentLine());
 		target.replace("fathers",  "founders", false);
 		target.replace(" ", "_", true);
-		assertEquals("replace 1", target.getCurrentLine(), "87_years_ago,_our_founders_brought_forth");
+		assertEquals("replace 1", "87_years_ago,_our_founders_brought_forth", target.getCurrentLine());
+	}
+	
+	@Test
+	public void testReplaceWithG() {
+		final String punk = "One, Two, Three";
+		target.addLine(punk);
+		assertEquals(1, target.size());
+		target.replace("e", "ow", true);
+		assertEquals("replaceG", "Onow, Two, Throwow", target.getCurrentLine());
 	}
 }

@@ -172,7 +172,7 @@ public class BufferPrimsStringBuffer implements BufferPrims {
 	public void replace(String old, String newStr, boolean all, int startLine, int endLine) {
 		int startOffset = findLineOffset(startLine),
 				endOffset = findLineOffset(endLine);
-		// TODO Auto-generated method stub
+		// TODO finish me
 	}
 
 	/** Undo not supported */
@@ -180,12 +180,8 @@ public class BufferPrimsStringBuffer implements BufferPrims {
 	public boolean isUndoSupported() {
 		return false;
 	}
-	@Override
-	public void undo() {
-		throw new UnsupportedOperationException();
-	}
 
-	/** This object as a String == the Buffer as a String */
+	/** Format the Buffer as a single long String */
 	@Override
 	public String toString() {
 		return buffer.toString();
