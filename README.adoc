@@ -16,8 +16,10 @@ It was also written to show that you can, in fact, do something small and
 (possibly) useful in Java without dragging in 47 different add-on JAR files.
 This project has zero external run-time dependencies and only one test-time dependency (JUnit).
 
-Note that the BufferPrims code has changed slightly from the version shown in
-the July/August issue of Java Magazine, due to the need to support a screen editor as well.
+Note that the `BufferPrims` code has changed slightly from the version shown
+in Part 1 of the article, appearing in the July/August issue of Java
+Magazine, due to the need to support a screen editor as well.  If you want
+that exact version, use `git checkout edj_article`.
 
 == Usage
 
@@ -28,7 +30,7 @@ the July/August issue of Java Magazine, due to the need to support a screen edit
 * Copy the _edj_ and _vedj_ scripts to a directory on your path 
 (for MS-DOS-derived systems, somebody needs to write an _edj.bat_, do do the same thing).
 * Copy the JAR file from _target/_ to someplace like $HOME/lib/
-* Hack the _edj_ script to find the jar file there.
+* Hack the scripts script to find the jar file there.
 
 Invoke with a filename argument, or, start with an 'r' (read file) command.
 
@@ -36,7 +38,7 @@ Commands are single lower-case letters (or '.' or '=')
 Command lines are of the form _start_,_end_++COMMAND++_operands_
 
 The line range _start_,_end_ is optional; if omitted altogether the
-current line (most recently added or modified) is meant.
+current line (most recently added or modified, or clicked on in vedj) is meant.
 If only one line is intended, omit the comma and the second number.
 A command line that consists only of a line number will move the current line to that number.
 
