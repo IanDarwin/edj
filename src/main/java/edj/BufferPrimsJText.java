@@ -1,5 +1,8 @@
 package edj;
 
+import static edj.BufferUtils.indexToLineNum;
+import static edj.BufferUtils.lineNumToIndex;
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -70,7 +73,6 @@ public class BufferPrimsJText implements BufferPrims {
 		try (BufferedReader rdr = new BufferedReader(new FileReader(fileName))) {
 			rdr.lines().forEach(s -> sb.append(s).append('\n'));
 			textView.setText(sb.toString());
-			System.err.println("bpjt.readBuffer: " + sb);
 		} catch (IOException ex) {
 			throw new RuntimeException("Error reading file " + fileName, ex);
 		}

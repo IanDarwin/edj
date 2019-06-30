@@ -61,16 +61,4 @@ public interface BufferPrims {
 		throw new UnsupportedOperationException();
 	}
 
-	// Utility methods, only for implementations that use a 0-based
-	// internal representation (interface values are 1-based).
-	default int lineNumToIndex(int ln) {
-		if (ln == 0) {
-			ln = 1;
-		}
-		return ln - 1;
-	}
-	default int indexToLineNum(int ix) {
-		return ix + 1;
-	}
-
 }

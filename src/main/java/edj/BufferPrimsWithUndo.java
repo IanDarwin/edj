@@ -1,5 +1,7 @@
 package edj;
 
+import static edj.BufferUtils.lineNumToIndex;
+
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;

@@ -1,5 +1,7 @@
 package edj;
 
+import static edj.BufferUtils.lineNumToIndex;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
