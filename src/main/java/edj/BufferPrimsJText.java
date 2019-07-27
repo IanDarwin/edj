@@ -12,6 +12,12 @@ import java.util.List;
 import javax.swing.JTextArea;
 import javax.swing.text.BadLocationException;
 
+/** Special BufferPrims for dealing with a buffer that actually belongs
+ * to a JTextArea, for use in the SwingEditor variant "vedj".
+ * 
+ * Remember that all input line# arguments are 1-based,
+ * and must be converted.
+ */
 public class BufferPrimsJText implements BufferPrims {
 	
 	private JTextArea textView;
@@ -33,6 +39,7 @@ public class BufferPrimsJText implements BufferPrims {
 		StringBuilder sb = new StringBuilder();
 		newLines.forEach(s->sb.append(s).append('\n'));
 		textView.append(sb.toString());
+		textView.setCaretPosition(textView.getDocument().getLength());
 	}
 
 	@Override
@@ -49,8 +56,8 @@ public class BufferPrimsJText implements BufferPrims {
 	@Override
 	public void deleteLines(int start, int end) {
 		try {
-			int startOffset = textView.getLineStartOffset(start);
-			int endOffset = textView.getLineEndOffset(end);
+			int startOffset = textView.getLineStartOffset(indexToLineNum(start));
+			int endOffset = textView.getLineEndOffset(indexToLineNum(end));
 			textView.select(startOffset, endOffset);
 			textView.cut();
 		} catch (BadLocationException e) {
@@ -142,8 +149,10 @@ public class BufferPrimsJText implements BufferPrims {
 		return ret;
 	}
 
+	/** Replace in the current line */
 	@Override
 	public void replace(String oldRE, String replacement, boolean all) {
+		System.out.println("BufferPrimsJText.replace(3 args)");
 		try {
 			final int adjustedLineNum = lineNumToIndex(getCurrentLineNumber());
 			System.out.printf("currentLineNum %d, adjusted %d\n",getCurrentLineNumber(), adjustedLineNum);
@@ -163,10 +172,29 @@ public class BufferPrimsJText implements BufferPrims {
 		}
 	}
 
+	/** Replace in the range of lines */
 	@Override
-	public void replace(String oldRE, String newStr, boolean all, int startLine, int endLine) {
-		// TODO Auto-generated method stub
-
+	public void replace(String regex, String newStr, boolean all, int startLine, int endLine) {
+		System.out.printf("BufferPrimsJText.replace(%s,%s,%b,%d,%d)",
+				regex, newStr, all, startLine, endLine);
+		int startLineNum = lineNumToIndex(startLine);
+		int endLineNum = lineNumToIndex(endLine);
+		List<String> lines = getLines(startLineNum, endLineNum);
+		StringBuffer updatedLines = new StringBuffer();
+		for (String l : lines) {
+			updatedLines.append(all ?
+					l.replaceAll(regex, newStr) :
+					l.replaceFirst(regex, newStr))
+					.append('\n');
+		}
+		try {
+			int startRange = textView.getLineStartOffset(startLineNum);
+			int endRange = textView.getLineEndOffset(endLineNum);
+			textView.replaceRange(updatedLines.toString(), 
+					lineNumToIndex(startRange) + 1, lineNumToIndex(endRange) + 1);
+		} catch (BadLocationException e) {
+			System.err.println("Bad Offset: " + e);
+		}
 	}
 
 	@Override
