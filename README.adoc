@@ -28,7 +28,7 @@ that exact version, use `git checkout edj_article`.
 	mvn package
 ----
 * Copy the _edj_ and _vedj_ scripts to a directory on your path 
-(for MS-DOS-derived systems, somebody needs to write a DOS bat files to do the same thing).
+(for MS-DOS-derived systems, somebody needs to write DOS bat files to do the same thing).
 * Copy the JAR file from _target/_ to someplace like $HOME/lib/
 * Hack the scripts script to find the jar file there.
 
