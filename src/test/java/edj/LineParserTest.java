@@ -80,6 +80,8 @@ public class LineParserTest {
 		return Arrays.asList(new Object[][] {
 			{ true, "1,2p", 1, 2,null  },
 			{ true, "2p", 2, 2, null },
+			{ true, "3s/Line/Foo/", 3, 3, "/Line/Foo/" },
+			{ true, "3,6s/Line/Foo/", 3, 6, "/Line/Foo/" },
 			{ true, ",p", 1, buffHandler.size(), null  },	// print all
 			{ true, ".p", current, current, null  }, // print current
 			{ true, "p", current, current, null  },
