@@ -1,3 +1,8 @@
+#!/bin/sh
+
+# To be a test file for stream editor.
+# Will have to use 'diff' or sh test to verify results
+
 echo Test - process stdin
 echo Hello old world | java -cp target/classes edj.StreamEditor -e s/old/new/
 echo Test - process file{1,2}
