@@ -24,14 +24,14 @@ public class LineEditor {
 
 	protected static String currentFileName;
 	
-	static Commands commands = new Commands(buffPrims) {
+	static Commands commands;
 
 		/**
 		 * Read lines from the user until they type a "." line
 		 * @return The List of lines.
 		 * @throws IOException 
 		 */
-		protected List<String> gatherLines() {
+		private static List<String> gatherLines() {
 			List<String> ret = new ArrayList<>();
 			try {
 				String line;
@@ -43,10 +43,15 @@ public class LineEditor {
 			}
 			return ret;
 		}
-	};
 	
 	/** Should remove throws, use try-catch inside loop */
 	public static void main(String[] args) throws IOException {
+		commands = new Commands(buffPrims);
+		commands.setCommand('a', pc -> {
+			int n = pc.startNum == -1 ? buffPrims.getCurrentLineNumber() : pc.startNum;
+			buffPrims.addLines(n, gatherLines());
+		});
+
 		String line;
 		in = new BufferedReader(new InputStreamReader(System.in));
 
