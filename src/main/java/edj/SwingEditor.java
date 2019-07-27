@@ -14,6 +14,7 @@ import java.awt.event.WindowListener;
 import java.io.File;
 import java.util.Vector;
 
+import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JCheckBoxMenuItem;
@@ -34,6 +35,8 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.event.UndoableEditListener;
 import javax.swing.text.BadLocationException;
+import javax.swing.undo.CannotRedoException;
+import javax.swing.undo.CannotUndoException;
 import javax.swing.undo.UndoManager;
 
 /**
@@ -68,8 +71,8 @@ public class SwingEditor extends JFrame {
 	final int XPAD = 5, YPAD = 5;
 	// Undo/Redo support using Swing's Undo Manager
 	private UndoManager mUndoManager = new UndoManager();
-	//private UndoAction undoAction;
-	//private RedoAction redoAction;
+	private UndoAction undoAction;
+	private RedoAction redoAction;
 
 	// Variables just for selection handling
 	private int selectionStart, selectionEnd;
