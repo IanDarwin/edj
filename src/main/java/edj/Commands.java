@@ -90,18 +90,8 @@ public class Commands {
 			// Any char not in the two strings can be used as delimiter
 			final String commandString = pl.operands;
 
-			String[] operands = commandString.split(commandString.substring(0, 1));
-			// These 'n' lines replace with call to parseSubstitute
-			// s=abc=def=g results [ "s", "abc", "def", "g"]
-			// if (operands.length == 1) {
-			//	System.out.println("? s/oldRe/newStr/[g]");
-			// }
-			// String oldStr = operands[1];
-			// String newStr = operands.length > 2 ? operands[2] : "";
-			// boolean global = operands.length == 4 && operands[3].contains("g");
-			// boolean print = operands.length == 4 && operands[3].contains("p");
 			ParsedSubstitute subs = LineParser.parseSubstitute(commandString);
-			if (range.length == 0) {			// current line only
+			if (!pl.startFound && range.length == 0) {			// current line only
 				buffPrims.replace(subs.pattStr, subs.replacement, subs.global);
 				if (subs.print) {
 					System.out.println(buffPrims.getCurrentLine());
