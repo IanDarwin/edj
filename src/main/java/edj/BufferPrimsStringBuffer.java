@@ -10,7 +10,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Implement BufferPrims with a single long string with \n delimiting lines
+ * Implement BufferPrims with a single long string with \n delimiting lines.
+ * Not used in the current editor but may be useful as an existence proof.
+ * Has some additional methods appropriate to its internal representation.
  * @author Ian Darwin
  */
 public class BufferPrimsStringBuffer implements BufferPrims {
