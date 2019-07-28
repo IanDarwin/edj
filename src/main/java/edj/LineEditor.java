@@ -26,23 +26,23 @@ public class LineEditor {
 	
 	static Commands commands;
 
-		/**
-		 * Read lines from the user until they type a "." line
-		 * @return The List of lines.
-		 * @throws IOException 
-		 */
-		private static List<String> gatherLines() {
-			List<String> ret = new ArrayList<>();
-			try {
-				String line;
-				while ((line = in.readLine()) != null && !line.equals(".")) {
-					ret.add(line);
-				}
-			} catch (IOException e) {
-				throw new BufferException("IO Error reading from stdin!?", e);
+	/**
+	 * Read lines from the user until they type a "." line
+	 * @return The List of lines.
+	 * @throws IOException If anything goes wrong
+	 */
+	private static List<String> gatherLines() {
+		List<String> ret = new ArrayList<>();
+		try {
+			String line;
+			while ((line = in.readLine()) != null && !line.equals(".")) {
+				ret.add(line);
 			}
-			return ret;
+		} catch (IOException e) {
+			throw new BufferException("IO Error reading from stdin!?", e);
 		}
+		return ret;
+	}
 	
 	/** Should remove throws, use try-catch inside loop */
 	public static void main(String[] args) throws IOException {
