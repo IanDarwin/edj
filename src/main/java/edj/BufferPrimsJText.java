@@ -56,8 +56,8 @@ public class BufferPrimsJText implements BufferPrims {
 	@Override
 	public void deleteLines(int start, int end) {
 		try {
-			int startOffset = textView.getLineStartOffset(indexToLineNum(start));
-			int endOffset = textView.getLineEndOffset(indexToLineNum(end));
+			int startOffset = textView.getLineStartOffset(lineNumToIndex(start));
+			int endOffset = textView.getLineEndOffset(lineNumToIndex(end));
 			textView.select(startOffset, endOffset);
 			textView.cut();
 		} catch (BadLocationException e) {
@@ -92,7 +92,7 @@ public class BufferPrimsJText implements BufferPrims {
 			--offset; // \n
 		try {
 			final int lineNumber = textView.getLineOfOffset(offset);
-			System.out.printf("getCurrentLineNumber(): offset %d l# %d\n", offset, lineNumber);
+			// System.out.printf("getCurrentLineNumber(): offset %d l# %d\n", offset, lineNumber);
 			return indexToLineNum(lineNumber);
 		} catch (BadLocationException e) {
 			throw new RuntimeException(e.toString(), e);
@@ -131,8 +131,8 @@ public class BufferPrimsJText implements BufferPrims {
 	@Override
 	public String getLine(int line) {
 		try {
-			int startOffset = textView.getLineStartOffset(line);
-			int endOffset = textView.getLineEndOffset(line);
+			int startOffset = textView.getLineStartOffset(lineNumToIndex(line));
+			int endOffset = textView.getLineEndOffset(lineNumToIndex(line));
 			int length = endOffset - startOffset - 1; // else includes \n
 			return textView.getText(startOffset, length);
 		} catch (BadLocationException e) {
@@ -172,14 +172,12 @@ public class BufferPrimsJText implements BufferPrims {
 		}
 	}
 
-	/** Replace in the range of lines */
+	/** Replace in a range of lines */
 	@Override
 	public void replace(String regex, String newStr, boolean all, int startLine, int endLine) {
-		System.out.printf("BufferPrimsJText.replace(%s,%s,%b,%d,%d)",
+		System.out.printf("BufferPrimsJText.replace(%s,%s,%b,%d,%d)%n",
 				regex, newStr, all, startLine, endLine);
-		int startLineNum = lineNumToIndex(startLine);
-		int endLineNum = lineNumToIndex(endLine);
-		List<String> lines = getLines(startLineNum, endLineNum);
+		List<String> lines = getLines(startLine, endLine);
 		StringBuffer updatedLines = new StringBuffer();
 		for (String l : lines) {
 			updatedLines.append(all ?
@@ -188,10 +186,10 @@ public class BufferPrimsJText implements BufferPrims {
 					.append('\n');
 		}
 		try {
-			int startRange = textView.getLineStartOffset(startLineNum);
-			int endRange = textView.getLineEndOffset(endLineNum);
+			int startRange = textView.getLineStartOffset(lineNumToIndex(startLine));
+			int endRange = textView.getLineEndOffset(lineNumToIndex(endLine));
 			textView.replaceRange(updatedLines.toString(), 
-					lineNumToIndex(startRange) + 1, lineNumToIndex(endRange) + 1);
+					startRange, endRange);
 		} catch (BadLocationException e) {
 			System.err.println("Bad Offset: " + e);
 		}
