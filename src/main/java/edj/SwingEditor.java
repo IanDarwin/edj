@@ -1,7 +1,5 @@
 package edj;
 
-import static edj.BufferUtils.indexToLineNum;
-
 import java.awt.BorderLayout;
 import java.awt.Font;
 import java.awt.Toolkit;
@@ -30,11 +28,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.KeyStroke;
-import javax.swing.event.CaretListener;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
-import javax.swing.event.UndoableEditListener;
-import javax.swing.text.BadLocationException;
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
 import javax.swing.undo.UndoManager;
@@ -66,23 +59,12 @@ public class SwingEditor extends JFrame {
 
 	// GUI controls
 	protected JTextArea textView;
-	protected JCheckBoxMenuItem lineNumsCB;
 	protected JComboBox<String> history;
 	final int XPAD = 5, YPAD = 5;
 	// Undo/Redo support using Swing's Undo Manager
 	private UndoManager mUndoManager = new UndoManager();
 	private UndoAction undoAction;
 	private RedoAction redoAction;
-
-	// Variables just for selection handling
-	private int selectionStart, selectionEnd;
-	private boolean isSelection;
-	private int selectionLength;
-	private int selStartLine, selEndLine;
-
-	// True when we want to receive edit change events from the JTextArea;
-	// false when we did something ourselves and know about it.
-	private boolean receiveEvents;
 
 	/** The only Constructor */
 	SwingEditor(String fileName) {
@@ -93,11 +75,7 @@ public class SwingEditor extends JFrame {
 		// Main window layout
 		textView = new JTextArea(20, 80);
 		textView.setFont(new Font("lucida-sans", Font.BOLD, 12));
-		textView.getDocument().addDocumentListener(eventFromScreen);
-		// textView.addCaretListener(caretsFromScreen);
-		// textView.getDocument().addUndoableEditListener(undoablesFromScreen);
 		// textView.setHint("Your text will appear here");
-		enableListeners();
 		add(BorderLayout.CENTER, new JScrollPane(textView));
 
 		// A narrow column at the left for the line numbers
@@ -130,12 +108,12 @@ public class SwingEditor extends JFrame {
 		JPanel bottomPanel = new JPanel();
 		bottomPanel.setBorder(BorderFactory.createTitledBorder("Command"));
 		history = new JComboBox<String>(new String[] {"# Commands Here"});
-		history.removeAllItems();
 		history.setEditable(true);
 		bottomPanel.add(history);
 		JButton goButton = new JButton("Go");
 		history.addActionListener(e -> goButton.requestFocus());
 		goButton.addActionListener(e -> doCommand(e));
+ 
 		bottomPanel.add(goButton);
 		add(BorderLayout.SOUTH, bottomPanel);
 
@@ -171,35 +149,38 @@ public class SwingEditor extends JFrame {
 		mb.add(editMenu);
 		final JMenuItem cutMI = new JMenuItem("Cut");
 		cutMI.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X, mask));
-		cutMI.addActionListener(e -> doCut());
-		//cutMI.setEnabled(false);
+		cutMI.addActionListener(e -> textView.cut());
 		editMenu.add(cutMI);
 		final JMenuItem copyMI = new JMenuItem("Copy");
 		copyMI.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, mask));
-		copyMI.setEnabled(false);
+		copyMI.addActionListener(e -> textView.copy());
 		editMenu.add(copyMI);
 		final JMenuItem pasteMI = new JMenuItem("Paste");
 		pasteMI.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_V, mask));
-		pasteMI.setEnabled(false);
+		pasteMI.addActionListener(e -> textView.paste());
 		editMenu.add(pasteMI);
 		editMenu.addSeparator();
 
 		// Edit Menu ends with Undo/Redo actions
-		JMenuItem undoAction = new JMenuItem("Undo");
+		undoAction = new UndoAction();
 		editMenu.add(undoAction);
-		undoAction.addActionListener(e -> buffer.undo());
+		undoAction.updateGuiState();
 
-		JMenuItem redoAction = new JMenuItem("Redo");
+		redoAction = new RedoAction();
 		editMenu.add(redoAction);
-		editMenu.setEnabled(false);
-		//redoAction.addActionListener(e -> buffer.redo());
+		redoAction.updateGuiState();
+
+		textView.getDocument().addUndoableEditListener(e -> {
+			//Remember the edit and update the menus
+			mUndoManager.addEdit(e.getEdit());
+			undoAction.updateGuiState();
+			redoAction.updateGuiState();
+        });
 
 		JMenu viewMenu = new JMenu("View");
 		mb.add(viewMenu);
-		lineNumsCB = new JCheckBoxMenuItem("Show line numbers");
-		lineNumsCB.addItemListener(e -> {
-			lineNumsColumn.setVisible(lineNumsCB.isSelected());
-		});
+		JCheckBoxMenuItem lineNumsCB = new JCheckBoxMenuItem("Show line numbers");
+		lineNumsCB.setEnabled(false);
 		viewMenu.add(lineNumsCB);
 
 		JMenu helpMenu = new JMenu("Help");
@@ -213,31 +194,14 @@ public class SwingEditor extends JFrame {
 		addWindowListener(windowCloser);
 
 		pack();
+		
+		history.setPreferredSize(history.getSize());
+		history.removeAllItems();
 
 		if (fileName != null) {
 			readFile(fileName);
-		} else {
-			// Temporary hack for early development
-			buffer.addLine("This is some dummy text to start you off.");
-			buffer.addLine("lorem ipsem dolor");
-			buffer.addLine("nunciat verbatim est");
-			buffer.addLine("cualquieres.");
 		}
-		refresh();
-	}
-
-	/** We need to control the Listeners while doing something to the
-	 * buffer, else the JTextView will echo it back to us.
-	 * We use a global boolean to tell all our listeners
-	 * to do nothing, since the listeners themselves do not have a setEnabled()
-	 * type method pair, and adding/removing them is expensive and maybe risky.
-	 */
-	protected void enableListeners() {
-		receiveEvents = true;
-	}
-
-	protected void disableListeners() {
-		receiveEvents = false;
+		textView.repaint();
 	}
 
 	/**
@@ -247,11 +211,9 @@ public class SwingEditor extends JFrame {
 	 * @param fileName
 	 */
 	private void openFile(String fileName) {
-		disableListeners();
 		textView.setText("");
 		buffer.clearBuffer();
 		commands.readFile(fileName);
-		enableListeners();
 	}
 
 	/**
@@ -260,109 +222,12 @@ public class SwingEditor extends JFrame {
 	 * @param fileName
 	 */
 	private void readFile(String fileName) {
-		disableListeners();
 		commands.readFile(fileName);
-		enableListeners();
 	}
 
 	protected void doCut() {
 		System.out.println("Cut invoked");
 	}
-
-	/** 
-	 * Called when the caret position (and selection?) changes;
-	 * compute the current line (if just a click) or the
-	 * start and end positions if a selection.
-	 */
-	private CaretListener caretsFromScreen = (e) -> {
-		// if (!receiveEvents)							// XXX ?
-		// 	return;
-		final int dot = e.getDot(), mark = e.getMark();
-		isSelection = dot != mark;
-		// User can swipe in either direction but we want canonical
-		selectionStart = Math.min(dot, mark);
-		selectionEnd = Math.max(dot, mark);
-		selectionLength = selectionEnd - selectionStart;
-		try {
-			selStartLine = indexToLineNum(textView.getLineOfOffset(selectionStart));
-			if (isSelection) {
-				selEndLine = indexToLineNum(textView.getLineOfOffset(selectionEnd));
-				System.err.printf("Selection from %d to %d (%d chars)\n", selStartLine, selEndLine, selectionLength);
-				System.err.println(textView.getDocument().getText(Math.min(dot, mark), selectionLength));
-			} else {
-				selEndLine = -1; // Nobody should use this
-				System.out.println("Set current line to " + selStartLine);
-			}
-		} catch (BadLocationException ble) {
-			throw new RuntimeException(ble.toString(), ble);
-		}
-	};
-
-	/**
-	 * Invoked when the screen's view of the text changes under
-	 * control of the user (e.g., mouse/keys).
-	 * Changes we make are all *supposed* to be done with the
-	 * listeners off, so we shouldn't see events here caused by
-	 * things we did to the JTextArea's idea of the buffer.
-	 */
-	DocumentListener eventFromScreen = new DocumentListener() {
-
-		@Override
-		public void insertUpdate(DocumentEvent e) {
-			System.out.println("SwingEditor.eventFromScreen.insertUpdate(): " + e);
-			if (!receiveEvents)
-				return;
-			try {
-				int start = e.getOffset(),
-						length = e.getLength(),
-						end = start + length;
-				int first = textView.getLineOfOffset(start);
-				int last = textView.getLineOfOffset(end);
-				System.err.printf("insertUpdate: st %d, len %d, end %d, lines %d to %d",
-					start, length, end, first, last);
-			} catch (BadLocationException e1) {
-				e1.printStackTrace();
-			}
-		}
-
-		/**
-		 * Remove is complicated, as it may remove partial first & last lines;
-		 * we have to understand whatever the user did and replicate it
-		 * (exactly!) in the buffer maintained by BufferPrims.
-		 */
-		@Override
-		public void removeUpdate(DocumentEvent e) {
-			System.out.println("SwingEditor.eventFromScreen.removeUpdate()");
-			if (!receiveEvents)
-				return;
-			try {
-				int start = e.getOffset(),
-					length = e.getLength(),
-					end = start + length;
-				int first = textView.getLineOfOffset(start);
-				int last = textView.getLineOfOffset(end);
-				System.out.printf("Removed lines %d to %d", first, last);
-				// XXX Remove the full lines in between (if any) from buffer
-				// XXX get the partial
-				// XXX Merge what's left
-				// pushUndo
-			} catch (BadLocationException ble) {
- 
-			}
-		}
-
-		@Override
-		public void changedUpdate(DocumentEvent e) {
-			System.out.println("SwingEditor.eventFromScreen.changedUpdate():" + e);
-		}
-	};
-
-	private UndoableEditListener undoablesFromScreen = e -> {
-		System.out.println(e);
-		((UndoManagerEdj) buffer).pushUndo("edit", () -> {
-			System.out.println("Would Undo something here");
-		});
-	};
 
 
 	/** 
@@ -371,8 +236,8 @@ public class SwingEditor extends JFrame {
 	 */
 	protected void doCommand(ActionEvent e) {
 		String line = (String) history.getSelectedItem();
-		System.out.println("line = " + line);
-		if (line.length() == 0)
+		// System.out.println("line = " + line);
+		if (line == null || line.length() == 0)
 			return;
 
 		// Old-time vi/vim users may type a : at start of command, strip it.
@@ -392,32 +257,9 @@ public class SwingEditor extends JFrame {
 		if (c == null) {
 			System.out.println("? Unknown command in " + line);
 		} else {
-			disableListeners();
 			c.execute(pl);
-			enableListeners();
-			refresh();
+			textView.repaint();
 		}
-	}
-
-	/**
-	 * Put the current buffer (from BufferPrims) into the JTextArea
-	 */
-	protected void refresh() {
-//		// BufferPrim line nums start at 1, not zero
-//		int topLine = 1;
-//		int fh = getFontMetrics(getFont()).getHeight();
-//		int numLines = getHeight() / fh;
-//		// int y = YPAD;
-//		StringBuilder sb = new StringBuilder();
-//		for (int i = topLine; i <= buffer.size() && i <= topLine + numLines; i++) {
-//			//g.drawString(buffer.get(i), XPAD, y += fh);
-//			if (lineNumsCB.isSelected())
-//				sb.append(i).append(' ');
-//			sb.append(buffer.getLine(i)).append("\n");
-//		}
-//		// return
-//		textView.setText(sb.toString());
-		textView.repaint();
 	}
 
 	/**
@@ -432,7 +274,7 @@ public class SwingEditor extends JFrame {
 			if (file.isFile()) {
 				openFile(file.getAbsolutePath());
 				setTitle(file.getName());
-				refresh();
+				textView.repaint();
 			} else {
 				JOptionPane.showMessageDialog(this, "Not a file: " + file);
 			}
@@ -505,9 +347,9 @@ public class SwingEditor extends JFrame {
 			// Redundant, so just ignore it.
 			return;
 		}
-		if (unsavedChanges) {	// Add unsaved tag
+		if (unsavedChanges) {	// Add unsaved flag
 			setTitle("*" + " " + getTitle());
-		} else {				// Chop unsaved tag
+		} else if (getTitle().startsWith("* ")) {		// Chop unsaved flag
 			setTitle(getTitle().substring(2));
 		}
 		this.mUnsavedChanges = unsavedChanges;
