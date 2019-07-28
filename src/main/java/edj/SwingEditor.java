@@ -10,7 +10,6 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.io.File;
-import java.util.Vector;
 
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
@@ -19,7 +18,6 @@ import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
-import javax.swing.JList;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -77,18 +75,6 @@ public class SwingEditor extends JFrame {
 		textView.setFont(new Font("lucida-sans", Font.BOLD, 12));
 		// textView.setHint("Your text will appear here");
 		add(BorderLayout.CENTER, new JScrollPane(textView));
-
-		// A narrow column at the left for the line numbers
-		Vector<Integer> x = new Vector<>();
-		int[] nums = new int[] {0,1,2,3,4,5,6,7,8,9,10};
-		for (int i : nums)
-			x.add(i);
-		JList<Integer> lineNumsColumn = new JList<>(x);
-		lineNumsColumn.setFont(textView.getFont());
-		lineNumsColumn.setFixedCellHeight(textView.getFont().getBaselineFor('A'));
-		lineNumsColumn.setEnabled(false);	// no actions here
-		lineNumsColumn.setVisible(false);	// initially off (maybe get from prefs?)
-		add(BorderLayout.WEST, lineNumsColumn);
 
 		// Main data structures
 		buffer = new BufferPrimsJText(textView);
