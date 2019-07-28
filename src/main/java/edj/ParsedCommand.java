@@ -30,13 +30,16 @@ public class ParsedCommand {
 		if (startFound && commaFound && !endFound) {
 			return new int[] {startNum, BufferPrims.INF};
 		}
+		if (startFound && !commaFound && endFound) {
+			return new int[] {startNum, endNum};	// single line
+		}
 		if (!startFound && commaFound && endFound) {
 			return new int[] {1, endNum};
 		}
 		if (commaFound) {
 			return new int[] {1, BufferPrims.INF };
 		}
-		return new int[] {};
+		return new int[] {0, 0};
 	}
 }
 
