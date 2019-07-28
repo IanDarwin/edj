@@ -97,6 +97,8 @@ public class SwingEditor extends JFrame {
 		commands.setCommand('a', pc -> {
 			buffer.addLine(pc.operands);
 		});
+		// Redefine undo
+		commands.setCommand('u', e -> undoAction.actionPerformed(null));
 		// A Debug option
 		commands.setCommand('D', pc -> {
 			for (int i = 0; i < buffer.size(); i++) {
