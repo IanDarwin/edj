@@ -152,20 +152,18 @@ public class BufferPrimsJText implements BufferPrims {
 	/** Replace in the current line */
 	@Override
 	public void replace(String oldRE, String replacement, boolean all) {
-		System.out.println("BufferPrimsJText.replace(3 args)");
+		// System.out.println("BufferPrimsJText.replace(3 args)");
 		try {
 			final int adjustedLineNum = lineNumToIndex(getCurrentLineNumber());
-			System.out.printf("currentLineNum %d, adjusted %d\n",getCurrentLineNumber(), adjustedLineNum);
 			int startRange = textView.getLineStartOffset(adjustedLineNum);
 			int endRange = textView.getLineEndOffset(adjustedLineNum) - 1;
-			System.out.printf("Range %d to %d\n", startRange, endRange);
 			String line = textView.getText(startRange, endRange - startRange);
 			String str = all ?
 					line.replaceAll(oldRE, replacement) :
 					line.replaceFirst(oldRE, replacement);
-			System.out.printf("replace: %s %s %b--%s %d,%d `%s'\n",
-					oldRE, replacement, all,
-					line, startRange, endRange, str);
+			// System.out.printf("replace: %s %s %b--%s %d,%d `%s'\n",
+			//		oldRE, replacement, all,
+			//		line, startRange, endRange, str);
 			textView.replaceRange(str, startRange, endRange);
 		} catch (BadLocationException e) {
 			throw new RuntimeException(e.toString(), e);
@@ -175,8 +173,8 @@ public class BufferPrimsJText implements BufferPrims {
 	/** Replace in a range of lines */
 	@Override
 	public void replace(String regex, String newStr, boolean all, int startLine, int endLine) {
-		System.out.printf("BufferPrimsJText.replace(%s,%s,%b,%d,%d)%n",
-				regex, newStr, all, startLine, endLine);
+		// System.out.printf("BufferPrimsJText.replace(%s,%s,%b,%d,%d)%n",
+		//		regex, newStr, all, startLine, endLine);
 		List<String> lines = getLines(startLine, endLine);
 		StringBuffer updatedLines = new StringBuffer();
 		for (String l : lines) {
