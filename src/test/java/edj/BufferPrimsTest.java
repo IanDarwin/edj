@@ -31,7 +31,7 @@ public class BufferPrimsTest {
 	@Parameters(name = "{0}")
 	public static Class<BufferPrims>[] params() {
 		return (Class<BufferPrims>[]) new Class<?>[] { 
-			// BufferPrimsStringBuffer.class, // XXX replace(5 args) unfinished.
+			BufferPrimsStringBuffer.class, // XXX replace(5 args) unfinished.
 			BufferPrimsNoUndo.class, 
 			BufferPrimsWithUndo.class,
 			BufferPrimsJText.class,

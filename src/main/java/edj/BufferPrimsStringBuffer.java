@@ -171,8 +171,11 @@ public class BufferPrimsStringBuffer implements BufferPrims {
 	@Override
 	public void replace(String old, String newStr, boolean all, int startLine, int endLine) {
 		int startOffset = findLineOffset(startLine),
-				endOffset = findLineOffset(endLine);
-		// TODO finish me
+				endOffset = findLineOffset(endLine + 1);
+		int length = endOffset - startOffset;
+		String tmp = buffer.substring(startOffset, length);
+		tmp = all ? tmp.replaceAll(old, newStr) : tmp.replace(old, newStr);
+		buffer.replace(startOffset, length, tmp);
 	}
 
 	/** Undo not supported */
