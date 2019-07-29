@@ -66,7 +66,7 @@ The following commands are implemented so far:
 |u|undo|Undoes last modify command
 |====
 
-The following are NOT yet implemented:
+The following are *not* implemented:
 
 [[unimplemented-commands]]
 .Unimplemented Commands
@@ -90,7 +90,7 @@ The following are NOT yet implemented:
 |x|?|encrypt file
 |y|-|
 |z|-|
-|:|extention|That would start down the path from _ed_ to _ex_, and then _vi_. Not on my watch.
+|:|extension|That would start down the path from _ed_ to _ex_, and then _vi_. Not on my watch.
 |====
 
 == History
@@ -104,7 +104,7 @@ Version 1 of AT&T Bell Labs Research UNIX around 1970.
 
 Versions of _ed_ have been in every flavor of Unix (including *BSD and Mac OS X),
 and in every Unix-like system (Linux etc.), since then.
-Berkeley Unix mutated _ed_ into _ex_, and then added _vi_sual editing mode, which became the
-_vi_ editor, in the late 1970's. Vi still _ex_ line mode editing built in.
+Berkeley Unix mutated _ed_ into _ex_, and then added __vi__sual editing mode, which became the
+_vi_ editor, in the late 1970's. Vi still has _ex_ (and hence _ed_) line mode editing built in.
 
 So this project is a months-young implementation of a fifty-year-old specification.
