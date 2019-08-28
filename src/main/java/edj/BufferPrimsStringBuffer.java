@@ -16,8 +16,8 @@ import java.util.regex.Pattern;
  * @author Ian Darwin
  */
 public class BufferPrimsStringBuffer implements BufferPrims {
-	
-	private StringBuffer buffer = new StringBuffer();
+
+	private StringBuilder buffer = new StringBuilder();
 	int current;
 
 	protected String getBuffer() {
@@ -26,7 +26,7 @@ public class BufferPrimsStringBuffer implements BufferPrims {
 
 	protected void setBuffer(String contents) {
 		current = 0;
-		this.buffer = new StringBuffer(contents);
+		this.buffer = new StringBuilder(contents);
 		// Last line must end with newline
 		if (buffer.charAt(buffer.length() - 1) != '\n')
 			buffer.append('\n');

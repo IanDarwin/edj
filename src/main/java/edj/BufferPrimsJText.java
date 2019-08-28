@@ -176,7 +176,7 @@ public class BufferPrimsJText implements BufferPrims {
 		// System.out.printf("BufferPrimsJText.replace(%s,%s,%b,%d,%d)%n",
 		//		regex, newStr, all, startLine, endLine);
 		List<String> lines = getLines(startLine, endLine);
-		StringBuffer updatedLines = new StringBuffer();
+		StringBuilder updatedLines = new StringBuilder();
 		for (String l : lines) {
 			updatedLines.append(all ?
 					l.replaceAll(regex, newStr) :
