@@ -13,6 +13,8 @@ import java.util.regex.Pattern;
  * Implement BufferPrims with a single long string with \n delimiting lines.
  * Not used in the current editor but may be useful as an existence proof.
  * Has some additional methods appropriate to its internal representation.
+ * The name is historical; the code has been changed to use StringBuilder
+ * but it's annoying to rename the class...
  * @author Ian Darwin
  */
 public class BufferPrimsStringBuffer implements BufferPrims {
